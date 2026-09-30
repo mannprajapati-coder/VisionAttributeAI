@@ -295,7 +295,7 @@ public class IoUPersonTracker : IPersonTracker
                 else if (!track.IsConfirmed && track.ConfirmationHits >= 2)
                 {
                     track.ConfirmationState = TrackConfirmationState.Confirmed;
-                    track.PersonId = _nextPublicPersonId++;
+                    track.PersonId = AllocateNextPublicPersonId();
                     _logger.LogInformation(
                         "Frame {Frame} ({Time:F1}s): Tentative track PROMOTED to Confirmed Person #{PersonId} after {Hits} observations.",
                         frameIndex, timestampSec, track.PersonId, track.ConfirmationHits);
@@ -342,7 +342,7 @@ public class IoUPersonTracker : IPersonTracker
 
                     // Single image mode promotes immediately; video/camera begins as Tentative
                     bool immediateConfirm = !isOfflineVideo && frameIndex == 0;
-                    int assignedPublicId = immediateConfirm ? _nextPublicPersonId++ : 0;
+                    int assignedPublicId = immediateConfirm ? AllocateNextPublicPersonId() : 0;
                     var confirmState = immediateConfirm ? TrackConfirmationState.Confirmed : TrackConfirmationState.Tentative;
 
                     var newTrack = new TrackedPersonState(assignedPublicId, det.Box, det.Confidence)
@@ -522,6 +522,27 @@ public class IoUPersonTracker : IPersonTracker
                 _activeTracks.Remove(internalId);
             }
         }
+    }
+
+    private int AllocateNextPublicPersonId()
+    {
+        var usedIds = new HashSet<int>(
+            _activeTracks.Values
+                .Where(t => t.IsConfirmed && t.PersonId > 0)
+                .Select(t => t.PersonId));
+
+        if (usedIds.Count == 0)
+        {
+            _nextPublicPersonId = 1;
+            return 1;
+        }
+
+        int candidate = 1;
+        while (usedIds.Contains(candidate))
+        {
+            candidate++;
+        }
+        return candidate;
     }
 
     public void Reset()
