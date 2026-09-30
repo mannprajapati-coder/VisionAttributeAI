@@ -7,6 +7,7 @@ namespace VisionAttributeAI.DTOs.LiveCamera;
 public record TrackedPersonDto
 {
     public int PersonId { get; init; }
+    public int DisplayId { get; set; } = 1;
     public BoundingBoxDto BoundingBox { get; init; } = new(0, 0, 0, 0);
     public float DetectionConfidence { get; init; }
 

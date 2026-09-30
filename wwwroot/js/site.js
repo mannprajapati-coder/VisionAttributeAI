@@ -971,18 +971,19 @@ function renderLiveOverlay(persons, canvasWidth, canvasHeight) {
 
     if (!persons || persons.length === 0) return;
 
-    persons.forEach(p => {
+    persons.forEach((p, idx) => {
+        const dispId = p.displayId || (idx + 1);
         const box = p.boundingBox;
-        const color = getPersonColor(p.personId);
+        const color = getPersonColor(dispId);
 
         // Bounding Box
         ctx.strokeStyle = color;
         ctx.lineWidth = Math.max(3, Math.round(canvasWidth / 250));
         ctx.strokeRect(box.x, box.y, box.width, box.height);
 
-        // Label
+        // Label (Starts from Person #1 for active person on screen)
         const orientation = p.visibility?.orientation || '';
-        const label = `Person #${p.personId} (${(p.detectionConfidence * 100).toFixed(0)}%) [${orientation}]`;
+        const label = `Person #${dispId} (${(p.detectionConfidence * 100).toFixed(0)}%) [${orientation}]`;
         const fontSize = Math.max(13, Math.round(canvasWidth / 45));
         ctx.font = `600 ${fontSize}px Inter, sans-serif`;
 
@@ -1074,13 +1075,14 @@ function renderLivePersonsCards(persons) {
         selectedLivePersonId = persons[0].personId;
     }
 
-    // 2. Render Top Person Tabs
+    // 2. Render Top Person Tabs (Display ID starts from 01 for active persons)
     if (tabsContainer && tabsBar) {
         tabsContainer.style.display = 'block';
-        tabsBar.innerHTML = persons.map(p => {
-            const color = getPersonColor(p.personId);
+        tabsBar.innerHTML = persons.map((p, idx) => {
+            const dispId = p.displayId || (idx + 1);
+            const color = getPersonColor(dispId);
             const isSelected = p.personId === selectedLivePersonId;
-            const pIdFmt = String(p.personId).padStart(2, '0');
+            const pIdFmt = String(dispId).padStart(2, '0');
             const summaryTag = p.appearanceSex !== 'Unknown' && p.appearanceSex !== 'Insufficient Evidence'
                 ? p.appearanceSex
                 : (p.visibility?.orientation || 'Active');
@@ -1089,7 +1091,7 @@ function renderLivePersonsCards(persons) {
                 <button class="person-tab-btn ${isSelected ? 'active' : ''}" 
                         style="--tab-color: ${color};" 
                         onclick="selectLivePerson(${p.personId})"
-                        title="Click to inspect Person #${p.personId}">
+                        title="Click to inspect Person #${dispId} (Track #${p.personId})">
                     <span class="person-color-dot" style="background-color: ${color}; width: 8px; height: 8px; border-radius: 50%;"></span>
                     <span class="person-tab-name" style="color: ${isSelected ? color : 'inherit'};">PERSON ${pIdFmt}</span>
                     <span class="person-tab-pill">${summaryTag}</span>
@@ -1100,8 +1102,9 @@ function renderLivePersonsCards(persons) {
 
     // 3. Render Inspector Card for the Selected Person
     const selectedPerson = persons.find(p => p.personId === selectedLivePersonId) || persons[0];
-    const color = getPersonColor(selectedPerson.personId);
-    const pIdFormatted = String(selectedPerson.personId).padStart(2, '0');
+    const selectedDispId = selectedPerson.displayId || (persons.indexOf(selectedPerson) + 1);
+    const color = getPersonColor(selectedDispId);
+    const pIdFormatted = String(selectedDispId).padStart(2, '0');
 
     const stabilityTag = selectedPerson.isFullyStable
         ? '<span class="state-badge state-stable">Stable</span>'
@@ -1172,7 +1175,8 @@ function renderLiveDiagnostics(persons) {
 
     tbody.innerHTML = '';
 
-    persons.forEach(p => {
+    persons.forEach((p, idx) => {
+        const dispId = p.displayId || (idx + 1);
         const q = p.qualityScores || {};
         const v = p.visibility || {};
         const tr = document.createElement('tr');
@@ -1185,7 +1189,7 @@ function renderLiveDiagnostics(persons) {
         ].filter(Boolean).join(', ') || 'None';
 
         tr.innerHTML = `
-            <td><strong>#${p.personId}</strong></td>
+            <td><strong>#${dispId}</strong> <span style="font-size:0.72rem; color:var(--text-muted);">(Track #${p.personId})</span></td>
             <td>Age: ${p.trackingDiagnostics?.trackAgeFrames || 1}f<br/>IoU: ${(p.trackingDiagnostics?.lastMatchedIoU || 1).toFixed(2)}</td>
             <td><span class="orientation-chip">${v.orientation || 'Uncertain'}</span></td>
             <td>

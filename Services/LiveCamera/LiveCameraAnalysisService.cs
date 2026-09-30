@@ -354,6 +354,13 @@ public class LiveCameraAnalysisService : ILiveCameraAnalysisService
             personDtos.Add(personDto);
         }
 
+        // Assign 1-based sequential display IDs for currently visible active persons (Person 1, Person 2, ...)
+        personDtos.Sort((a, b) => a.PersonId.CompareTo(b.PersonId));
+        for (int i = 0; i < personDtos.Count; i++)
+        {
+            personDtos[i].DisplayId = i + 1;
+        }
+
         attrStopwatch.Stop();
         double attrMs = attrStopwatch.Elapsed.TotalMilliseconds;
         totalStopwatch.Stop();
