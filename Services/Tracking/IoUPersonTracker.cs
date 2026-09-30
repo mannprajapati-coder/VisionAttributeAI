@@ -30,9 +30,9 @@ public class IoUPersonTracker : IPersonTracker
         _logger = logger;
     }
 
-    public IReadOnlyList<TrackedPersonState> UpdateTracks(IReadOnlyList<DetectionResult> detections, bool isOfflineVideo = false)
+    public IReadOnlyList<TrackedPersonState> UpdateTracks(IReadOnlyList<DetectionResult> detections, bool isOfflineVideo = false, CameraMotionResult? cameraMotion = null)
     {
-        var observations = AssociateAndTrack(detections, null, isOfflineVideo);
+        var observations = AssociateAndTrack(detections, null, isOfflineVideo, cameraMotion: cameraMotion);
         return observations.Where(o => o.IsConfirmed).Select(o => o.TrackState).ToList();
     }
 
@@ -41,7 +41,8 @@ public class IoUPersonTracker : IPersonTracker
         IReadOnlyList<PersonPoseResult>? poses,
         bool isOfflineVideo = false,
         long frameIndex = 0,
-        double timestampSec = 0)
+        double timestampSec = 0,
+        CameraMotionResult? cameraMotion = null)
     {
         lock (_lock)
         {
@@ -55,8 +56,8 @@ public class IoUPersonTracker : IPersonTracker
 
             if (detections == null || detections.Count == 0)
             {
-                // Age all active tracks
-                AgeAndRetireTracks(new HashSet<int>(), isOfflineVideo, frameIndex, timestampSec);
+                // Age all active tracks with motion awareness
+                AgeAndRetireTracks(new HashSet<TrackedPersonState>(), isOfflineVideo, frameIndex, timestampSec, cameraMotion);
                 return Array.Empty<PersonFrameObservation>();
             }
 
@@ -111,7 +112,7 @@ public class IoUPersonTracker : IPersonTracker
                 }
             }
 
-            // 3. Evaluate Match Candidates against Active Tracks (both Tentative and Confirmed)
+            // 3. Evaluate Match Candidates against Active Tracks (with Camera Motion Compensation)
             var activeTracksList = _activeTracks.Values.Where(t => t.IsActive && !t.IsFinalized).ToList();
             var candidateMatches = new List<MatchCandidate>();
 
@@ -124,10 +125,22 @@ public class IoUPersonTracker : IPersonTracker
             {
                 var track = activeTracksList[t];
                 var prevBox = track.CurrentBox;
-                float prevH = Math.Max(1f, prevBox.Height);
-                float prevW = Math.Max(1f, prevBox.Width);
-                float prevCenterX = prevBox.X + (prevW / 2f);
-                float prevCenterY = prevBox.Y + (prevH / 2f);
+
+                // Apply Camera Motion Compensation (CMC) to predict new track bounding box
+                var evalBox = prevBox;
+                if (cameraMotion != null && cameraMotion.IsReliable)
+                {
+                    evalBox = new BoundingBox(
+                        prevBox.X + cameraMotion.DeltaX,
+                        prevBox.Y + cameraMotion.DeltaY,
+                        prevBox.Width,
+                        prevBox.Height);
+                }
+
+                float prevH = Math.Max(1f, evalBox.Height);
+                float prevW = Math.Max(1f, evalBox.Width);
+                float prevCenterX = evalBox.X + (prevW / 2f);
+                float prevCenterY = evalBox.Y + (prevH / 2f);
                 float prevArea = Math.Max(1f, prevW * prevH);
                 float prevAspect = prevW / prevH;
 
@@ -154,14 +167,14 @@ public class IoUPersonTracker : IPersonTracker
 
                     float areaRatio = Math.Max(prevArea, currArea) / Math.Min(prevArea, currArea);
                     float aspectDiff = Math.Abs(currAspect - prevAspect);
-                    float iou = CalculateIoU(prevBox, currBox);
+                    float iou = CalculateIoU(evalBox, currBox);
 
-                    // Gating Rules
+                    // Gating Rules against CMC-compensated position
                     bool passesIoU = iou >= matchIouThresh;
                     bool passesDisplacement = normalizedDisplacement <= effectiveMaxDisplacement;
                     bool passesArea = areaRatio <= maxAreaRatio;
                     bool passesAspect = aspectDiff <= 0.40f;
-                    bool canUseProximity = track.MissedFrames <= maxMissedForProx;
+                    bool canUseProximity = track.MissedFrames <= (maxMissedForProx + (cameraMotion?.MotionState == CameraMotionState.HighMotion ? 2 : 0));
 
                     bool isCandidate = false;
                     float score = 0f;
@@ -205,10 +218,10 @@ public class IoUPersonTracker : IPersonTracker
                             possibleIdSwitch = true;
                             rejectReason = $"Suspicious match: sudden scale jump ({areaRatio:F1}x) with low IoU ({iou:F2})";
                         }
-                        else if (track.MissedFrames >= 2 && normalizedDisplacement > 0.20f)
+                        else if (track.MissedFrames >= 2 && normalizedDisplacement > 0.20f && (!cameraMotion?.IsReliable ?? true))
                         {
                             possibleIdSwitch = true;
-                            rejectReason = $"Suspicious match: track missed for {track.MissedFrames} frames and reacquired with displacement ({normalizedDisplacement:F2})";
+                            rejectReason = $"Suspicious match: track missed for {track.MissedFrames} frames and reacquired with displacement ({normalizedDisplacement:F2}) without reliable CMC";
                         }
                     }
 
@@ -216,7 +229,7 @@ public class IoUPersonTracker : IPersonTracker
                     {
                         candidateMatches.Add(new MatchCandidate
                         {
-                            TrackInternalId = track.TrackAgeFrames, // internal tracking ref
+                            TrackInternalId = track.TrackAgeFrames,
                             TrackState = track,
                             DetectionIndex = d,
                             Detection = det,
@@ -270,8 +283,16 @@ public class IoUPersonTracker : IPersonTracker
                 track.PossibleIdSwitch = false;
                 track.PossibleIdSwitchReason = string.Empty;
 
+                // Re-acquisition of TemporarilyLost track (Preserves existing PersonId and Attribute History!)
+                if (track.ConfirmationState == TrackConfirmationState.TemporarilyLost)
+                {
+                    track.ConfirmationState = TrackConfirmationState.Confirmed;
+                    _logger.LogInformation(
+                        "Frame {Frame} ({Time:F1}s): Confirmed Person #{PersonId} RE-ACQUIRED successfully after motion/blur grace period.",
+                        frameIndex, timestampSec, track.PersonId);
+                }
                 // Track Confirmation Promotion
-                if (!track.IsConfirmed && track.ConfirmationHits >= 2)
+                else if (!track.IsConfirmed && track.ConfirmationHits >= 2)
                 {
                     track.ConfirmationState = TrackConfirmationState.Confirmed;
                     track.PersonId = _nextPublicPersonId++;
@@ -308,8 +329,8 @@ public class IoUPersonTracker : IPersonTracker
                 });
             }
 
-            // 5. Age and Retire Unmatched Existing Tracks
-            AgeAndRetireTracks(new HashSet<int>(matchedTrackObjects.Select(t => t.TrackAgeFrames)), isOfflineVideo, frameIndex, timestampSec);
+            // 5. Age and Retire Unmatched Existing Tracks with Motion Awareness
+            AgeAndRetireTracks(matchedTrackObjects, isOfflineVideo, frameIndex, timestampSec, cameraMotion);
 
             // 6. Create Clean New Tracks for Unmatched Detections
             for (int d = 0; d < detections.Count; d++)
@@ -375,9 +396,12 @@ public class IoUPersonTracker : IPersonTracker
         }
     }
 
-    private void AgeAndRetireTracks(HashSet<int> matchedInternalIds, bool isOfflineVideo, long frameIndex, double timestampSec)
+    private void AgeAndRetireTracks(HashSet<TrackedPersonState> matchedTracks, bool isOfflineVideo, long frameIndex, double timestampSec, CameraMotionResult? cameraMotion)
     {
         int maxAllowedMissed = isOfflineVideo ? _options.VideoMaxMissedFrames : _options.MaxMissedFrames;
+        bool isHighMotion = cameraMotion?.MotionState == CameraMotionState.HighMotion;
+        int effectiveMaxMissed = isHighMotion ? maxAllowedMissed + 3 : maxAllowedMissed;
+
         var toRetire = new List<int>();
         var toDiscardTentative = new List<int>();
 
@@ -385,16 +409,23 @@ public class IoUPersonTracker : IPersonTracker
         {
             if (!track.IsActive || track.IsFinalized) continue;
 
-            if (!matchedInternalIds.Contains(internalId))
+            if (!matchedTracks.Contains(track))
             {
                 track.MissedFrames++;
 
                 // If tentative and missed without confirmation, discard silently
-                if (!track.IsConfirmed && track.MissedFrames >= 2)
+                if (track.ConfirmationState == TrackConfirmationState.Tentative && track.MissedFrames >= 2)
                 {
                     toDiscardTentative.Add(internalId);
                 }
-                else if (track.MissedFrames > maxAllowedMissed)
+                else if (track.ConfirmationState == TrackConfirmationState.Confirmed && isHighMotion)
+                {
+                    // Transition to TemporarilyLost state during high camera motion
+                    track.ConfirmationState = TrackConfirmationState.TemporarilyLost;
+                    _logger.LogDebug("Frame {Frame}: Confirmed Person #{PersonId} transitioned to TemporarilyLost due to camera motion.", frameIndex, track.PersonId);
+                }
+                
+                if (track.MissedFrames > effectiveMaxMissed)
                 {
                     toRetire.Add(internalId);
                 }
@@ -417,11 +448,12 @@ public class IoUPersonTracker : IPersonTracker
             {
                 track.IsActive = false;
                 track.IsFinalized = true;
-                if (track.IsConfirmed && track.PersonId > 0)
+                track.ConfirmationState = TrackConfirmationState.Retired;
+                if (track.PersonId > 0)
                 {
                     _finalizedTracks[track.PersonId] = track;
                     _logger.LogInformation(
-                        "Frame {Frame} ({Time:F1}s): Confirmed Person #{PersonId} retired and finalized after {Missed} missed frames.",
+                        "Frame {Frame} ({Time:F1}s): Person #{PersonId} retired and finalized after {Missed} missed frames.",
                         frameIndex, timestampSec, track.PersonId, track.MissedFrames);
                 }
             }

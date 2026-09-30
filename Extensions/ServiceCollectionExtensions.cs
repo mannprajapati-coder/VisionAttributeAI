@@ -65,7 +65,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IPedestrianAttributeService>(sp => sp.GetRequiredService<PedestrianAttributeService>());
         services.AddSingleton<IPedestrianAttributeRecognizer, PedestrianAttributeRecognizer>();
 
-        // Attribute-Specific Quality Evaluator, Tracking, Temporal Aggregation
+        // Attribute-Specific Quality Evaluator, Tracking, Temporal Aggregation & Camera Motion Compensation
+        services.AddSingleton<ICameraMotionEstimator, CameraMotionEstimator>();
         services.AddSingleton<IFrameQualityFilter, FrameQualityFilter>();
         services.AddSingleton<IAttributeQualityEvaluator, AttributeQualityEvaluator>();
         services.AddSingleton<IPersonTracker, IoUPersonTracker>();

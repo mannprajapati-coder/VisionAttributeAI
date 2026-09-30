@@ -27,6 +27,7 @@ public class LiveCameraAnalysisService : ILiveCameraAnalysisService
     private readonly IPoseEstimationService _poseService;
     private readonly IUnifiedPersonAnalysisService _personAnalysisService;
     private readonly IPersonTracker _personTracker;
+    private readonly ICameraMotionEstimator _cameraMotionEstimator;
     private readonly ITemporalAppearanceAggregator _aggregator;
     private readonly IPersonCandidateValidator _candidateValidator;
     private readonly PersonAnalysisOptions _options;
@@ -34,12 +35,15 @@ public class LiveCameraAnalysisService : ILiveCameraAnalysisService
 
     private LiveFrameResponseDto? _latestState;
     private readonly object _stateLock = new();
+    private Mat? _prevFrameMat;
+    private readonly object _frameLock = new();
 
     public LiveCameraAnalysisService(
         IPersonDetector personDetector,
         IPoseEstimationService poseService,
         IUnifiedPersonAnalysisService personAnalysisService,
         IPersonTracker personTracker,
+        ICameraMotionEstimator cameraMotionEstimator,
         ITemporalAppearanceAggregator aggregator,
         IPersonCandidateValidator candidateValidator,
         IOptions<PersonAnalysisOptions> options,
@@ -49,6 +53,7 @@ public class LiveCameraAnalysisService : ILiveCameraAnalysisService
         _poseService = poseService;
         _personAnalysisService = personAnalysisService;
         _personTracker = personTracker;
+        _cameraMotionEstimator = cameraMotionEstimator;
         _aggregator = aggregator;
         _candidateValidator = candidateValidator;
         _options = options.Value;
@@ -87,15 +92,28 @@ public class LiveCameraAnalysisService : ILiveCameraAnalysisService
         var validDetections = validatedCandidates.Select(c => c.Detection).ToList();
         var validPoses = validatedCandidates.Select(c => c.Pose).ToList();
 
-        // 5. Multi-Person Tracking with Explicit 1-to-1 Spatial Binding
+        // 5. Global Camera Motion Compensation (CMC) Estimation
+        CameraMotionResult cameraMotion = CameraMotionResult.Stable();
+        lock (_frameLock)
+        {
+            if (_prevFrameMat != null && !_prevFrameMat.Empty())
+            {
+                cameraMotion = _cameraMotionEstimator.EstimateMotion(_prevFrameMat, frameMat);
+            }
+            _prevFrameMat?.Dispose();
+            _prevFrameMat = frameMat.Clone();
+        }
+
+        // 6. Multi-Person Tracking with Explicit 1-to-1 Spatial Binding & CMC Compensation
         var frameObservations = _personTracker.AssociateAndTrack(
             validDetections,
             validPoses,
             isOfflineVideo: false,
             frameIndex: frameIndex,
-            timestampSec: totalStopwatch.Elapsed.TotalSeconds);
+            timestampSec: totalStopwatch.Elapsed.TotalSeconds,
+            cameraMotion: cameraMotion);
 
-        // 6. Body-Region Cropping & Multi-Attribute Analysis (Only for Confirmed Tracks)
+        // 7. Body-Region Cropping & Multi-Attribute Analysis (Only for Confirmed Tracks)
         var attrStopwatch = Stopwatch.StartNew();
         var personDtos = new List<TrackedPersonDto>();
 
@@ -371,11 +389,17 @@ public class LiveCameraAnalysisService : ILiveCameraAnalysisService
     public void Reset()
     {
         _personTracker.Reset();
+        _cameraMotionEstimator.Reset();
+        lock (_frameLock)
+        {
+            _prevFrameMat?.Dispose();
+            _prevFrameMat = null;
+        }
         lock (_stateLock)
         {
             _latestState = null;
         }
-        _logger.LogInformation("Reset multi-person live tracking state and aggregation histories.");
+        _logger.LogInformation("Reset multi-person live tracking state, camera motion estimator, and aggregation histories.");
     }
 
     private static BestFrameItemDto MapBestFrame(BestFrameRecord r) => new()

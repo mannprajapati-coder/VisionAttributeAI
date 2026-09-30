@@ -50,6 +50,18 @@ if (args.Length > 0 && args[0].Equals("--scan-all-downloads", StringComparison.O
     return;
 }
 
+if (args.Length > 0 && args[0].Equals("--run-cmc-benchmark", StringComparison.OrdinalIgnoreCase))
+{
+    VisionAttributeAI.Tests.CameraMotionEstimatorBenchmark.RunBenchmark();
+    return;
+}
+
+if (args.Length > 0 && args[0].Equals("--run-camera-motion-diagnostic", StringComparison.OrdinalIgnoreCase))
+{
+    VisionAttributeAI.Tests.CameraMotionDiagnosticRunner.RunFullInvestigation();
+    return;
+}
+
 if (args.Length > 0 && args[0].Equals("--run-tracking-tests", StringComparison.OrdinalIgnoreCase))
 {
     var testResults = VisionAttributeAI.Tests.TrackingTestSuite.RunAllTests();

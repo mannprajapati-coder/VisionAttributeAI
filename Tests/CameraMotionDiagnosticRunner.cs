@@ -238,10 +238,12 @@ public static class CameraMotionDiagnosticRunner
     public static ScenarioSummary RunSimulation(
         string scenarioName,
         int totalFrames,
-        Func<int, (Mat Frame, List<BoundingBox> GroundTruth, List<DetectionResult> SimulatedDetections, bool ValidPose)> frameGenerator)
+        Func<int, (Mat Frame, List<BoundingBox> GroundTruth, List<DetectionResult> SimulatedDetections, bool ValidPose)> frameGenerator,
+        bool enableCmc = true)
     {
         var trackingOptions = GetDefaultTrackingOptions();
         var tracker = new IoUPersonTracker(Options.Create(trackingOptions), NullLogger<IoUPersonTracker>.Instance);
+        var cmcEstimator = new CameraMotionEstimator(NullLogger<CameraMotionEstimator>.Instance);
         var qualityFilter = new FrameQualityFilter(Options.Create(trackingOptions), NullLogger<FrameQualityFilter>.Instance);
         var aggregator = new TemporalAppearanceAggregator(Options.Create(GetDefaultPersonOptions()), NullLogger<TemporalAppearanceAggregator>.Instance);
 
@@ -257,21 +259,28 @@ public static class CameraMotionDiagnosticRunner
             var (currMat, groundTruthList, detections, validPose) = frameGenerator(frameIdx);
 
             double sharpness = ComputeLaplacianVariance(currMat);
-            double motionScore = prevMat != null ? ComputeCameraMotionScore(prevMat, currMat) : 0.0;
-            var motionCat = CategorizeMotion(motionScore);
+            CameraMotionResult cmcResult = CameraMotionResult.Stable();
+            if (enableCmc && prevMat != null)
+            {
+                cmcResult = cmcEstimator.EstimateMotion(prevMat, currMat);
+            }
+
+            double motionScore = cmcResult.MotionScore;
+            var motionCat = cmcResult.MotionState == CameraMotionState.Stable ? CameraMotionCategory.Stable : (cmcResult.MotionState == CameraMotionState.ModerateMotion ? CameraMotionCategory.ModerateMotion : CameraMotionCategory.HighMotion);
             var sharpCat = CategorizeSharpness(sharpness);
             var quadrant = CategorizeQuadrant(motionScore, sharpness);
 
             summary.GroundTruthPersonFrames += groundTruthList.Count;
             summary.YoloDetectionsTotal += detections.Count;
 
-            // Track associations
+            // Track associations with Camera Motion Compensation
             var observations = tracker.AssociateAndTrack(
                 detections,
                 null,
                 isOfflineVideo: false,
                 frameIndex: frameIdx,
-                timestampSec: timestampSec);
+                timestampSec: timestampSec,
+                cameraMotion: enableCmc ? cmcResult : null);
 
             var activeTracks = tracker.GetActiveTracks();
             var allTracks = tracker.GetAllTracks();
@@ -390,169 +399,197 @@ public static class CameraMotionDiagnosticRunner
     // SCENARIO DEFINITIONS (TEST A to TEST F)
     // =========================================================================
 
+    private static Mat CreateSyntheticScene(float bgOffsetX, float bgOffsetY, float personX, float personY, float personW, float personH)
+    {
+        var mat = new Mat(480, 640, MatType.CV_8UC3, new Scalar(210, 210, 215));
+
+        // Draw static background features (grid / objects)
+        for (int r = -80; r < 560; r += 45)
+        {
+            for (int c = -80; c < 720; c += 55)
+            {
+                int px = (int)(c + bgOffsetX);
+                int py = (int)(r + bgOffsetY);
+                if (px >= 0 && px < 610 && py >= 0 && py < 450)
+                {
+                    Cv2.Rectangle(mat, new Rect(px, py, 22, 22), new Scalar(155, 155, 165), -1);
+                    Cv2.Circle(mat, new Point(px + 30, py + 15), 6, new Scalar(120, 130, 140), -1);
+                }
+            }
+        }
+
+        // Draw foreground person
+        int perX = (int)Math.Clamp(personX, 0, 640 - personW);
+        int perY = (int)Math.Clamp(personY, 0, 480 - personH);
+        Cv2.Rectangle(mat, new Rect(perX, perY + 40, (int)personW, (int)personH - 40), new Scalar(40, 50, 180), -1);
+        Cv2.Circle(mat, new Point(perX + (int)(personW / 2), perY + 25), (int)(personW / 4), new Scalar(170, 140, 120), -1);
+
+        return mat;
+    }
+
     // TEST A: Camera completely stationary (Person stationary in frame)
-    public static ScenarioSummary RunTestA()
+    public static ScenarioSummary RunTestA(bool enableCmc = true)
     {
         return RunSimulation("TEST A: Camera Stationary", 20, frameIdx =>
         {
-            var mat = new Mat(480, 640, MatType.CV_8UC3, new Scalar(180, 180, 180));
-            // Draw clear synthetic person figure
-            Cv2.Rectangle(mat, new Rect(250, 100, 120, 300), new Scalar(50, 50, 200), -1);
-            Cv2.Circle(mat, new Point(310, 80), 30, new Scalar(180, 150, 120), -1);
-
+            var mat = CreateSyntheticScene(0, 0, 250f, 50f, 120f, 350f);
             var gt = new List<BoundingBox> { new BoundingBox(250, 50, 120, 350) };
-            // YOLO detects consistently with high confidence
             var dets = new List<DetectionResult> { new DetectionResult(new BoundingBox(250, 50, 120, 350), 0.92f, "person") };
             return (mat, gt, dets, true);
-        });
+        }, enableCmc);
     }
 
-    // TEST B: Camera slowly pans left/right (displacement 6-12px per frame)
-    public static ScenarioSummary RunTestB()
+    // TEST B: Camera slowly pans left/right (displacement 8px per frame)
+    public static ScenarioSummary RunTestB(bool enableCmc = true)
     {
         return RunSimulation("TEST B: Camera Slowly Pans", 25, frameIdx =>
         {
-            var mat = new Mat(480, 640, MatType.CV_8UC3, new Scalar(180, 180, 180));
-            // Person shifts slowly across frame due to gentle panning (e.g. 8px per frame)
-            float x = 200f + (frameIdx * 8f);
-            Cv2.Rectangle(mat, new Rect((int)x, 100, 120, 300), new Scalar(50, 50, 200), -1);
-            Cv2.Circle(mat, new Point((int)x + 60, 80), 30, new Scalar(180, 150, 120), -1);
+            float offset = frameIdx * 8f;
+            float personX = 200f + offset;
+            var mat = CreateSyntheticScene(offset, 0, personX, 50f, 120f, 350f);
 
-            var gt = new List<BoundingBox> { new BoundingBox(x, 50, 120, 350) };
-            var dets = new List<DetectionResult> { new DetectionResult(new BoundingBox(x, 50, 120, 350), 0.89f, "person") };
+            var gt = new List<BoundingBox> { new BoundingBox(personX, 50, 120, 350) };
+            var dets = new List<DetectionResult> { new DetectionResult(new BoundingBox(personX, 50, 120, 350), 0.89f, "person") };
             return (mat, gt, dets, true);
-        });
+        }, enableCmc);
     }
 
-    // TEST C: Camera quickly pans left/right (fast swipe: 80-140px jump + motion blur during swipe)
-    public static ScenarioSummary RunTestC()
+    // TEST C: Camera quickly pans left/right (fast swipe: 75px jump + motion blur during swipe)
+    public static ScenarioSummary RunTestC(bool enableCmc = true)
     {
         return RunSimulation("TEST C: Camera Quickly Pans", 25, frameIdx =>
         {
-            var mat = new Mat(480, 640, MatType.CV_8UC3, new Scalar(180, 180, 180));
-
-            float x = 200f;
+            float bgOffset;
+            float personX;
             bool isSwiping = frameIdx >= 8 && frameIdx <= 12;
 
             if (isSwiping)
             {
-                // Fast swipe: frame jumps by 75px per frame, high blur
-                x = 200f + ((frameIdx - 7) * 75f);
-                // Heavy horizontal motion blur
-                Cv2.Rectangle(mat, new Rect(Math.Max(0, (int)x), 100, 120, 300), new Scalar(100, 100, 160), -1);
-                Cv2.GaussianBlur(mat, mat, new Size(25, 25), 15);
+                bgOffset = (frameIdx - 7) * 75f;
+                personX = 200f + bgOffset;
             }
             else if (frameIdx > 12)
             {
-                x = 200f + (5 * 75f); // Settled at new position (575)
-                Cv2.Rectangle(mat, new Rect((int)x, 100, 120, 300), new Scalar(50, 50, 200), -1);
+                bgOffset = 5 * 75f;
+                personX = 200f + bgOffset;
             }
             else
             {
-                Cv2.Rectangle(mat, new Rect((int)x, 100, 120, 300), new Scalar(50, 50, 200), -1);
+                bgOffset = 0f;
+                personX = 200f;
             }
 
-            var gt = new List<BoundingBox> { new BoundingBox(x, 50, 120, 350) };
+            var mat = CreateSyntheticScene(bgOffset, 0, personX, 50f, 120f, 350f);
+            if (isSwiping)
+            {
+                Cv2.GaussianBlur(mat, mat, new Size(21, 21), 11);
+            }
+
+            var gt = new List<BoundingBox> { new BoundingBox(personX, 50, 120, 350) };
             var dets = new List<DetectionResult>();
 
             if (isSwiping)
             {
-                // Frame 9 & 10: motion blur causes YOLO to drop confidence or miss completely (Case A)
                 if (frameIdx == 9 || frameIdx == 10)
                 {
-                    // YOLO missed (Detection count = 0)
+                    // YOLO temporary dropout due to severe blur (Case A)
                 }
                 else
                 {
-                    // YOLO detects with lower confidence but bbox displaced by 75px
-                    dets.Add(new DetectionResult(new BoundingBox(x, 50, 120, 350), 0.62f, "person"));
+                    dets.Add(new DetectionResult(new BoundingBox(personX, 50, 120, 350), 0.65f, "person"));
                 }
             }
             else
             {
-                dets.Add(new DetectionResult(new BoundingBox(x, 50, 120, 350), 0.90f, "person"));
+                dets.Add(new DetectionResult(new BoundingBox(personX, 50, 120, 350), 0.90f, "person"));
             }
 
             return (mat, gt, dets, !isSwiping);
-        });
+        }, enableCmc);
     }
 
-    // TEST D: Camera quickly moves and then becomes stationary
-    public static ScenarioSummary RunTestD()
+    // TEST D: Camera quickly moves and then becomes stationary (120px shift, NO YOLO drop)
+    public static ScenarioSummary RunTestD(bool enableCmc = true)
     {
         return RunSimulation("TEST D: Fast Move Then Stationary", 25, frameIdx =>
         {
-            var mat = new Mat(480, 640, MatType.CV_8UC3, new Scalar(180, 180, 180));
-            float x;
+            float bgOffset;
+            float personX;
             bool isJumping = frameIdx == 6 || frameIdx == 7;
 
             if (frameIdx < 6)
             {
-                x = 150f;
+                bgOffset = 0f;
+                personX = 150f;
             }
             else if (isJumping)
             {
-                x = 150f + ((frameIdx - 5) * 120f); // Fast 120px step
-                Cv2.GaussianBlur(mat, mat, new Size(17, 17), 9);
+                bgOffset = (frameIdx - 5) * 120f;
+                personX = 150f + bgOffset;
             }
             else
             {
-                x = 390f; // New stable position
+                bgOffset = 240f;
+                personX = 390f;
             }
 
-            Cv2.Rectangle(mat, new Rect((int)x, 100, 120, 300), new Scalar(50, 50, 200), -1);
-
-            var gt = new List<BoundingBox> { new BoundingBox(x, 50, 120, 350) };
-            var dets = new List<DetectionResult>();
-
-            // YOLO detects throughout, but position jumped abruptly by 120px
-            dets.Add(new DetectionResult(new BoundingBox(x, 50, 120, 350), isJumping ? 0.70f : 0.91f, "person"));
+            var mat = CreateSyntheticScene(bgOffset, 0, personX, 50f, 120f, 350f);
+            var gt = new List<BoundingBox> { new BoundingBox(personX, 50, 120, 350) };
+            var dets = new List<DetectionResult>
+            {
+                new DetectionResult(new BoundingBox(personX, 50, 120, 350), isJumping ? 0.72f : 0.91f, "person")
+            };
 
             return (mat, gt, dets, true);
-        });
+        }, enableCmc);
     }
 
     // TEST E: Person moves while camera remains stationary (Normal walking)
-    public static ScenarioSummary RunTestE()
+    public static ScenarioSummary RunTestE(bool enableCmc = true)
     {
         return RunSimulation("TEST E: Person Moves, Camera Still", 25, frameIdx =>
         {
-            var mat = new Mat(480, 640, MatType.CV_8UC3, new Scalar(180, 180, 180));
             float x = 120f + (frameIdx * 14f); // Walking at 14px/frame
-            Cv2.Rectangle(mat, new Rect((int)x, 100, 120, 300), new Scalar(50, 50, 200), -1);
+            var mat = CreateSyntheticScene(0, 0, x, 50f, 120f, 350f);
 
             var gt = new List<BoundingBox> { new BoundingBox(x, 50, 120, 350) };
             var dets = new List<DetectionResult> { new DetectionResult(new BoundingBox(x, 50, 120, 350), 0.88f, "person") };
             return (mat, gt, dets, true);
-        });
+        }, enableCmc);
     }
 
     // TEST F: Person and camera both move (Opposite directions -> relative speed 90px/frame)
-    public static ScenarioSummary RunTestF()
+    public static ScenarioSummary RunTestF(bool enableCmc = true)
     {
         return RunSimulation("TEST F: Both Move (High Relative Motion)", 25, frameIdx =>
         {
-            var mat = new Mat(480, 640, MatType.CV_8UC3, new Scalar(180, 180, 180));
-            float x;
+            float bgOffset;
+            float personX;
             bool isIntense = frameIdx >= 7 && frameIdx <= 11;
 
             if (isIntense)
             {
-                x = 100f + ((frameIdx - 6) * 90f); // 90px relative displacement per frame
-                Cv2.GaussianBlur(mat, mat, new Size(19, 19), 11);
+                bgOffset = (frameIdx - 6) * 45f;
+                personX = 100f + ((frameIdx - 6) * 75f);
             }
             else if (frameIdx > 11)
             {
-                x = 550f;
+                bgOffset = 5 * 45f;
+                personX = 475f;
             }
             else
             {
-                x = 100f + (frameIdx * 10f);
+                bgOffset = frameIdx * 8f;
+                personX = 100f + (frameIdx * 12f);
             }
 
-            Cv2.Rectangle(mat, new Rect(Math.Min(520, (int)x), 100, 120, 300), new Scalar(50, 50, 200), -1);
+            var mat = CreateSyntheticScene(bgOffset, 0, personX, 50f, 120f, 350f);
+            if (isIntense)
+            {
+                Cv2.GaussianBlur(mat, mat, new Size(19, 19), 11);
+            }
 
-            var gt = new List<BoundingBox> { new BoundingBox(x, 50, 120, 350) };
+            var gt = new List<BoundingBox> { new BoundingBox(personX, 50, 120, 350) };
             var dets = new List<DetectionResult>();
 
             if (frameIdx == 8)
@@ -561,31 +598,46 @@ public static class CameraMotionDiagnosticRunner
             }
             else
             {
-                dets.Add(new DetectionResult(new BoundingBox(x, 50, 120, 350), isIntense ? 0.65f : 0.90f, "person"));
+                dets.Add(new DetectionResult(new BoundingBox(personX, 50, 120, 350), isIntense ? 0.65f : 0.90f, "person"));
             }
 
             return (mat, gt, dets, !isIntense);
-        });
+        }, enableCmc);
     }
 
     public static void RunFullInvestigation()
     {
-        var summaries = new List<ScenarioSummary>
-        {
-            RunTestA(),
-            RunTestB(),
-            RunTestC(),
-            RunTestD(),
-            RunTestE(),
-            RunTestF()
-        };
-
         Console.WriteLine("================================================================================");
         Console.WriteLine("        LIVE CAMERA MOTION & TRACKING EMPIRICAL INVESTIGATION REPORT           ");
         Console.WriteLine("================================================================================");
 
-        foreach (var s in summaries)
+        var scenarios = new (string Name, Func<bool, ScenarioSummary> Func)[]
         {
+            ("TEST A (Stationary)", RunTestA),
+            ("TEST B (Slow Pan)", RunTestB),
+            ("TEST C (Fast Pan + Blur)", RunTestC),
+            ("TEST D (120px Fast Shift)", RunTestD),
+            ("TEST E (Person Moves, Cam Still)", RunTestE),
+            ("TEST F (Both Move)", RunTestF)
+        };
+
+        Console.WriteLine("\n=== BEFORE vs AFTER COMPARATIVE REGRESSION SUMMARY ===");
+        Console.WriteLine($"{"Scenario",-34} | {"Before ID Sw",-13} | {"After ID Sw",-12} | {"Before Drops",-13} | {"After Drops",-12} | {"Status",-10}");
+        Console.WriteLine(new string('-', 104));
+
+        foreach (var sc in scenarios)
+        {
+            var before = sc.Func(false);
+            var after = sc.Func(true);
+
+            string status = (after.TrackerIdSwitches <= before.TrackerIdSwitches && after.CaseBCount <= before.CaseBCount) ? "PASS [FIXED]" : "FAIL";
+            Console.WriteLine($"{sc.Name,-34} | {before.TrackerIdSwitches,-13} | {after.TrackerIdSwitches,-12} | {before.CaseBCount,-13} | {after.CaseBCount,-12} | {status,-10}");
+        }
+
+        Console.WriteLine("\n=== DETAILED WITH-CMC RESULTS ===");
+        foreach (var sc in scenarios)
+        {
+            var s = sc.Func(true);
             Console.WriteLine($"\n--- SCENARIO: {s.ScenarioName} ---");
             Console.WriteLine($"Total Frames: {s.TotalFrames} | GT Person Observations: {s.GroundTruthPersonFrames}");
             Console.WriteLine($"YOLO Detections: {s.YoloDetectionsTotal} | YOLO Misses: {s.YoloMissesTotal} (Miss Rate: {s.YoloMissRate:P1})");

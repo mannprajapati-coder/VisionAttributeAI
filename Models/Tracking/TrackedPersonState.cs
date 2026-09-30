@@ -7,7 +7,8 @@ public enum TrackConfirmationState
 {
     Tentative = 0,
     Confirmed = 1,
-    Retired = 2
+    TemporarilyLost = 2,
+    Retired = 3
 }
 
 /// <summary>
@@ -20,7 +21,8 @@ public class TrackedPersonState
     public Guid TrackGenerationId { get; init; } = Guid.NewGuid();
     public TrackConfirmationState ConfirmationState { get; set; } = TrackConfirmationState.Tentative;
     public int ConfirmationHits { get; set; } = 1;
-    public bool IsConfirmed => ConfirmationState == TrackConfirmationState.Confirmed;
+    public bool IsConfirmed => ConfirmationState == TrackConfirmationState.Confirmed || ConfirmationState == TrackConfirmationState.TemporarilyLost;
+    public bool IsTemporarilyLost => ConfirmationState == TrackConfirmationState.TemporarilyLost;
 
     public BoundingBox CurrentBox { get; set; }
     public BoundingBox? PreviousBox { get; set; }

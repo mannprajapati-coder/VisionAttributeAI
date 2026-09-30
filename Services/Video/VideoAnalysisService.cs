@@ -28,6 +28,7 @@ public class VideoAnalysisService : IVideoAnalysisService
     private readonly IUnifiedPersonAnalysisService _personAnalysisService;
     private readonly ITemporalAppearanceAggregator _aggregator;
     private readonly IPersonCandidateValidator _candidateValidator;
+    private readonly ICameraMotionEstimator _cameraMotionEstimator;
     private readonly IOptions<LiveTrackingOptions> _trackingOptions;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<VideoAnalysisService> _logger;
@@ -38,6 +39,7 @@ public class VideoAnalysisService : IVideoAnalysisService
         IUnifiedPersonAnalysisService personAnalysisService,
         ITemporalAppearanceAggregator aggregator,
         IPersonCandidateValidator candidateValidator,
+        ICameraMotionEstimator cameraMotionEstimator,
         IOptions<LiveTrackingOptions> trackingOptions,
         ILoggerFactory loggerFactory,
         ILogger<VideoAnalysisService> logger)
@@ -47,6 +49,7 @@ public class VideoAnalysisService : IVideoAnalysisService
         _personAnalysisService = personAnalysisService;
         _aggregator = aggregator;
         _candidateValidator = candidateValidator;
+        _cameraMotionEstimator = cameraMotionEstimator;
         _trackingOptions = trackingOptions;
         _loggerFactory = loggerFactory;
         _logger = logger;
@@ -105,6 +108,7 @@ public class VideoAnalysisService : IVideoAnalysisService
             int sampledFramesAnalyzed = 0;
 
             using var frameMat = new Mat();
+            using var prevSampledMat = new Mat();
 
             while (capture.Read(frameMat))
             {
@@ -131,15 +135,24 @@ public class VideoAnalysisService : IVideoAnalysisService
                     var validDetections = validatedCandidates.Select(c => c.Detection).ToList();
                     var validPoses = validatedCandidates.Select(c => c.Pose).ToList();
 
-                    // D. Explicit 1-to-1 Spatial Multi-Person Tracking & Association
+                    // D. Global Camera Motion Compensation (CMC) Estimation
+                    CameraMotionResult cameraMotion = CameraMotionResult.Stable();
+                    if (!prevSampledMat.Empty())
+                    {
+                        cameraMotion = _cameraMotionEstimator.EstimateMotion(prevSampledMat, frameMat);
+                    }
+                    frameMat.CopyTo(prevSampledMat);
+
+                    // E. Explicit 1-to-1 Spatial Multi-Person Tracking & Association with CMC
                     var frameObservations = videoTracker.AssociateAndTrack(
                         validDetections,
                         validPoses,
                         isOfflineVideo: true,
                         frameIndex: currentFrameIndex,
-                        timestampSec: currentTimestampSeconds);
+                        timestampSec: currentTimestampSeconds,
+                        cameraMotion: cameraMotion);
 
-                    // E. Analyze EACH CONFIRMED person independently (Tentative tracks are evaluated silently)
+                    // F. Analyze EACH CONFIRMED person independently (Tentative tracks are evaluated silently)
                     var attrSw = Stopwatch.StartNew();
 
                     foreach (var frameObs in frameObservations)

@@ -12,18 +12,19 @@ public interface IPersonTracker
     /// <summary>
     /// Updates tracking states with new YOLO detections and returns matched/created active tracks.
     /// </summary>
-    IReadOnlyList<TrackedPersonState> UpdateTracks(IReadOnlyList<DetectionResult> detections, bool isOfflineVideo = false);
+    IReadOnlyList<TrackedPersonState> UpdateTracks(IReadOnlyList<DetectionResult> detections, bool isOfflineVideo = false, CameraMotionResult? cameraMotion = null);
 
     /// <summary>
     /// Explicit 1-to-1 association that binds each YOLO detection to its matching YOLO-Pose keypoints/regions
-    /// and associates with active multi-object tracks under strict gating rules.
+    /// and associates with active multi-object tracks under strict gating rules with optional Camera Motion Compensation (CMC).
     /// </summary>
     IReadOnlyList<PersonFrameObservation> AssociateAndTrack(
         IReadOnlyList<DetectionResult> detections,
         IReadOnlyList<PersonPoseResult>? poses,
         bool isOfflineVideo = false,
         long frameIndex = 0,
-        double timestampSec = 0);
+        double timestampSec = 0,
+        CameraMotionResult? cameraMotion = null);
 
     /// <summary>
     /// Gets all currently active tracked persons.
