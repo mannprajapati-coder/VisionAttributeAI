@@ -1,0 +1,374 @@
+{
+  "shoe_benchmark": {
+    "mean_latency_vit_ms": 251.16,
+    "mean_latency_fclip_ms": 68.89,
+    "samples": [
+      {
+        "id": "FEET_01",
+        "desc": "Young Man Standing on Sunny Road",
+        "file": "young-man-standing-in-middle-of-road-on-sunny-day-JMPF00583.jpg",
+        "dimensions": "369x99 px",
+        "laplacian_variance": 3.21,
+        "visibility_gate": "InsufficientVisualEvidence (Too Small / Blurry)",
+        "ground_truth": "Sneakers / Casual White Sneakers",
+        "gt_type": "Sneakers",
+        "shoe_vit_3class": {
+          "latency_ms": 0.0,
+          "predictions": {
+            "Status": "InsufficientVisualEvidence (Too Small / Blurry)"
+          }
+        },
+        "fashion_clip_footwear": {
+          "latency_ms": 0.0,
+          "predictions": {
+            "Status": "InsufficientVisualEvidence (Too Small / Blurry)"
+          }
+        }
+      },
+      {
+        "id": "FEET_02",
+        "desc": "Young Boy Standing Outdoors",
+        "file": "boy.jpg",
+        "dimensions": "201x87 px",
+        "laplacian_variance": 252.96,
+        "visibility_gate": "Feet Clearly Visible",
+        "ground_truth": "Sneakers / Dark Trainers",
+        "gt_type": "Sneakers",
+        "shoe_vit_3class": {
+          "latency_ms": 188.05,
+          "predictions": {
+            "Sandal": 0.601718,
+            "Boot": 0.331071,
+            "Shoe": 0.067211
+          }
+        },
+        "fashion_clip_footwear": {
+          "latency_ms": 62.5,
+          "predictions": {
+            "Heels": 0.231342,
+            "Boots": 0.1966,
+            "Formal Shoes": 0.177471,
+            "Sneakers": 0.13917,
+            "Sandals": 0.137758,
+            "Loafers": 0.11766
+          }
+        }
+      },
+      {
+        "id": "FEET_03",
+        "desc": "Female in Dress",
+        "file": "female.jpg",
+        "dimensions": "87x36 px",
+        "laplacian_variance": 210.94,
+        "visibility_gate": "Feet Clearly Visible",
+        "ground_truth": "Sandals / Heeled Sandals",
+        "gt_type": "Sandals",
+        "shoe_vit_3class": {
+          "latency_ms": 256.57,
+          "predictions": {
+            "Sandal": 0.45839,
+            "Boot": 0.334993,
+            "Shoe": 0.206617
+          }
+        },
+        "fashion_clip_footwear": {
+          "latency_ms": 65.19,
+          "predictions": {
+            "Formal Shoes": 0.22506,
+            "Sandals": 0.192844,
+            "Loafers": 0.19039,
+            "Sneakers": 0.160379,
+            "Heels": 0.139987,
+            "Boots": 0.09134
+          }
+        }
+      },
+      {
+        "id": "FEET_04",
+        "desc": "Female Pedestrian Walking",
+        "file": "femalealone.jpg",
+        "dimensions": "163x79 px",
+        "laplacian_variance": 284.81,
+        "visibility_gate": "Feet Clearly Visible",
+        "ground_truth": "Boots / Dark Winter Boots",
+        "gt_type": "Boots",
+        "shoe_vit_3class": {
+          "latency_ms": 223.83,
+          "predictions": {
+            "Sandal": 0.512976,
+            "Boot": 0.298316,
+            "Shoe": 0.188708
+          }
+        },
+        "fashion_clip_footwear": {
+          "latency_ms": 59.74,
+          "predictions": {
+            "Sandals": 0.286987,
+            "Loafers": 0.153714,
+            "Sneakers": 0.153206,
+            "Formal Shoes": 0.1526,
+            "Heels": 0.146208,
+            "Boots": 0.107284
+          }
+        }
+      },
+      {
+        "id": "FEET_05",
+        "desc": "Pedestrian Outdoors",
+        "file": "pexels.jpg",
+        "dimensions": "200x67 px",
+        "laplacian_variance": 3853.3,
+        "visibility_gate": "Feet Clearly Visible",
+        "ground_truth": "Sneakers / Casual Shoes",
+        "gt_type": "Sneakers",
+        "shoe_vit_3class": {
+          "latency_ms": 225.83,
+          "predictions": {
+            "Boot": 0.348991,
+            "Sandal": 0.326795,
+            "Shoe": 0.324213
+          }
+        },
+        "fashion_clip_footwear": {
+          "latency_ms": 61.3,
+          "predictions": {
+            "Boots": 0.194068,
+            "Heels": 0.189959,
+            "Loafers": 0.176616,
+            "Formal Shoes": 0.167962,
+            "Sandals": 0.14026,
+            "Sneakers": 0.131135
+          }
+        }
+      },
+      {
+        "id": "FEET_06_OCCLUDED",
+        "desc": "Waist-up Crop (Feet Cut Off)",
+        "file": "crop.jpg",
+        "dimensions": "236x79 px",
+        "laplacian_variance": 85.29,
+        "visibility_gate": "Feet Clearly Visible",
+        "ground_truth": "Not Visible (Waist up)",
+        "gt_type": "Not Visible",
+        "shoe_vit_3class": {
+          "latency_ms": 259.38,
+          "predictions": {
+            "Sandal": 0.469754,
+            "Boot": 0.291277,
+            "Shoe": 0.238968
+          }
+        },
+        "fashion_clip_footwear": {
+          "latency_ms": 83.64,
+          "predictions": {
+            "Formal Shoes": 0.242945,
+            "Heels": 0.181358,
+            "Loafers": 0.17886,
+            "Boots": 0.157827,
+            "Sandals": 0.122521,
+            "Sneakers": 0.116489
+          }
+        }
+      },
+      {
+        "id": "FEET_VID_15",
+        "desc": "WalkRoad.mp4 Pedestrian Frame 15",
+        "file": "walkroad_feet_f15.jpg",
+        "dimensions": "216x128 px",
+        "laplacian_variance": 8152.57,
+        "visibility_gate": "Feet Clearly Visible",
+        "ground_truth": "Sneakers / Casual Sports Shoes",
+        "gt_type": "Sneakers",
+        "shoe_vit_3class": {
+          "latency_ms": 281.84,
+          "predictions": {
+            "Sandal": 0.414385,
+            "Boot": 0.364814,
+            "Shoe": 0.220801
+          }
+        },
+        "fashion_clip_footwear": {
+          "latency_ms": 73.59,
+          "predictions": {
+            "Heels": 0.198884,
+            "Sandals": 0.189385,
+            "Sneakers": 0.17639,
+            "Boots": 0.165889,
+            "Formal Shoes": 0.140194,
+            "Loafers": 0.129258
+          }
+        }
+      },
+      {
+        "id": "FEET_VID_45",
+        "desc": "WalkRoad.mp4 Pedestrian Frame 45",
+        "file": "walkroad_feet_f45.jpg",
+        "dimensions": "216x128 px",
+        "laplacian_variance": 16989.41,
+        "visibility_gate": "Feet Clearly Visible",
+        "ground_truth": "Sneakers / Casual Sports Shoes",
+        "gt_type": "Sneakers",
+        "shoe_vit_3class": {
+          "latency_ms": 266.15,
+          "predictions": {
+            "Boot": 0.399352,
+            "Sandal": 0.308884,
+            "Shoe": 0.291764
+          }
+        },
+        "fashion_clip_footwear": {
+          "latency_ms": 68.8,
+          "predictions": {
+            "Sneakers": 0.238058,
+            "Sandals": 0.185955,
+            "Boots": 0.160726,
+            "Heels": 0.157444,
+            "Formal Shoes": 0.134852,
+            "Loafers": 0.122966
+          }
+        }
+      },
+      {
+        "id": "FEET_VID_90",
+        "desc": "WalkRoad.mp4 Pedestrian Frame 90",
+        "file": "walkroad_feet_f90.jpg",
+        "dimensions": "216x128 px",
+        "laplacian_variance": 7820.98,
+        "visibility_gate": "Feet Clearly Visible",
+        "ground_truth": "Sneakers / Casual Sports Shoes",
+        "gt_type": "Sneakers",
+        "shoe_vit_3class": {
+          "latency_ms": 307.6,
+          "predictions": {
+            "Sandal": 0.3826,
+            "Shoe": 0.322726,
+            "Boot": 0.294674
+          }
+        },
+        "fashion_clip_footwear": {
+          "latency_ms": 76.37,
+          "predictions": {
+            "Sneakers": 0.176617,
+            "Loafers": 0.175596,
+            "Boots": 0.175499,
+            "Sandals": 0.16352,
+            "Formal Shoes": 0.162611,
+            "Heels": 0.146156
+          }
+        }
+      }
+    ]
+  },
+  "wrist_watch_resolution_experiment": [
+    {
+      "id": "WRIST_01",
+      "desc": "Young Man Standing on Sunny Road",
+      "person_bbox": "192x450 px",
+      "wrist_roi": "26x28 px",
+      "visible_watch_footprint": "0x0 px",
+      "distance": "Medium (approx 4-5m)",
+      "motion_blur": "Low",
+      "ground_truth": "Bare Wrist / No Watch",
+      "quality_gate_decision": "InsufficientVisualEvidence",
+      "optical_feasibility": "Marginal / Highly Error-Prone (Watch < 10px across)"
+    },
+    {
+      "id": "WRIST_02",
+      "desc": "Young Boy Standing",
+      "person_bbox": "240x520 px",
+      "wrist_roi": "22x24 px",
+      "visible_watch_footprint": "0x0 px",
+      "distance": "Medium (approx 3-4m)",
+      "motion_blur": "Low",
+      "ground_truth": "Bare Wrist / No Watch",
+      "quality_gate_decision": "InsufficientVisualEvidence",
+      "optical_feasibility": "Marginal / Highly Error-Prone (Watch < 10px across)"
+    },
+    {
+      "id": "WRIST_03",
+      "desc": "Female in Dress",
+      "person_bbox": "210x580 px",
+      "wrist_roi": "20x22 px",
+      "visible_watch_footprint": "8x9 px",
+      "distance": "Medium",
+      "motion_blur": "Low",
+      "ground_truth": "Bracelet (Non-Watch Accessory)",
+      "quality_gate_decision": "InsufficientVisualEvidence",
+      "optical_feasibility": "Marginal / Highly Error-Prone (Watch < 10px across)"
+    },
+    {
+      "id": "WRIST_04",
+      "desc": "Female Pedestrian Walking",
+      "person_bbox": "260x620 px",
+      "wrist_roi": "28x30 px",
+      "visible_watch_footprint": "0x0 px",
+      "distance": "Near-Medium",
+      "motion_blur": "Medium (Walking)",
+      "ground_truth": "Sleeve Cuff / Occluded",
+      "quality_gate_decision": "InsufficientVisualEvidence",
+      "optical_feasibility": "Marginal / Highly Error-Prone (Watch < 10px across)"
+    },
+    {
+      "id": "WRIST_05",
+      "desc": "Waist-up Person Crop",
+      "person_bbox": "350x480 px",
+      "wrist_roi": "45x50 px",
+      "visible_watch_footprint": "18x20 px",
+      "distance": "Near (approx 1.5m)",
+      "motion_blur": "Low",
+      "ground_truth": "Analog Wrist Watch Present",
+      "quality_gate_decision": "Sufficient Visual Evidence",
+      "optical_feasibility": "Feasible with Specialist Detector (Wrist >= 40px, Watch >= 18px)"
+    },
+    {
+      "id": "WRIST_06_FAR",
+      "desc": "WalkRoad.mp4 Frame 15 (Far Pedestrian)",
+      "person_bbox": "90x210 px",
+      "wrist_roi": "9x11 px",
+      "visible_watch_footprint": "3x4 px",
+      "distance": "Far (approx >12m)",
+      "motion_blur": "High (Motion Blur)",
+      "ground_truth": "Sub-pixel / Unresolvable",
+      "quality_gate_decision": "Not Visible / Extreme Sub-pixel",
+      "optical_feasibility": "Physically Impossible (Wrist < 15px, severe sub-sampling)"
+    },
+    {
+      "id": "WRIST_07_MED",
+      "desc": "WalkRoad.mp4 Frame 90 (Closer Walking Pedestrian)",
+      "person_bbox": "140x360 px",
+      "wrist_roi": "16x18 px",
+      "visible_watch_footprint": "6x7 px",
+      "distance": "Medium (approx 6-8m)",
+      "motion_blur": "Medium (Walking)",
+      "ground_truth": "Uncertain / Sub-Nyquist (<10px)",
+      "quality_gate_decision": "InsufficientVisualEvidence",
+      "optical_feasibility": "Marginal / Highly Error-Prone (Watch < 10px across)"
+    }
+  ],
+  "false_positive_analysis": [
+    {
+      "test_item": "Bare Wrist with Skin Texture",
+      "risk_level": "Medium",
+      "detector_vulnerability": "Can misclassify dark freckles/shadows as watch dial if using simple binary classifier.",
+      "mitigation": "Requires bounding-box object detector with high IOU threshold on wrist and dial/strap aspect ratio."
+    },
+    {
+      "test_item": "Metallic / Leather Bracelet",
+      "risk_level": "High (Top False Positive Source)",
+      "detector_vulnerability": "Share identical wrist strap geometry; only difference is absence of circular/square watch face.",
+      "mitigation": "Watch model must specifically detect dial bezel/digital display, not just wrist bands."
+    },
+    {
+      "test_item": "Sleeve Cuff (Jacket / Shirt button)",
+      "risk_level": "Medium-High",
+      "detector_vulnerability": "Sleeve cuff buttons and dark hems close to the wrist keypoint look like dark watch bands.",
+      "mitigation": "Crop must be centered on wrist joint and require visible wrist skin transition."
+    },
+    {
+      "test_item": "Smartphone held in Hand near Wrist",
+      "risk_level": "Medium",
+      "detector_vulnerability": "Black rectangular glass screen of smartphone held in hand overlaps wrist ROI.",
+      "mitigation": "Spatial non-max suppression excluding bounding boxes extending beyond palm/fingers."
+    }
+  ]
+}

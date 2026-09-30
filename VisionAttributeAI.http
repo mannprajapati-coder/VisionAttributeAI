@@ -1,0 +1,6 @@
+@VisionAttributeAI_HostAddress = http://localhost:5212
+
+GET {{VisionAttributeAI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

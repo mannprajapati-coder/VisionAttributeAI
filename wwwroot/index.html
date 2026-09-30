@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionAttributeAI - Multi-Person Vision Intelligence</title>
+    <link rel="stylesheet" href="css/site.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <svg class="logo-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <div class="logo-text">
+                    <span class="logo-title">VisionAttributeAI</span>
+                    <span class="logo-badge">Multi-Person Vision Intelligence</span>
+                </div>
+            </div>
+            <div class="api-status" id="apiStatus">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Checking Backend...</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Hero & Title Section -->
+        <section class="hero-section">
+            <h1 class="hero-title">Multi-Person Attribute Recognition</h1>
+            <p class="hero-subtitle">
+                Enterprise Computer Vision Pipeline: Real-Time Detection, Multi-Region Crop Isolation, Pose Orientation Analysis, and Temporal Consistency Aggregation.
+            </p>
+
+            <!-- Pipeline Architecture Flowchart -->
+            <div class="pipeline-card">
+                <div class="pipeline-title">Unified Multi-Person Pipeline Architecture</div>
+                <div class="pipeline-steps">
+                    <div class="step-item active">
+                        <div class="step-badge">1</div>
+                        <div class="step-name">Input Layer</div>
+                        <div class="step-desc">Image / Video / Stream</div>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-item active">
+                        <div class="step-badge">2</div>
+                        <div class="step-name">YOLO Detector</div>
+                        <div class="step-desc">Multi-Person Detection</div>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-item active">
+                        <div class="step-badge">3</div>
+                        <div class="step-name">YOLO-Pose</div>
+                        <div class="step-desc">17 Kpts & Orientation</div>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-item active">
+                        <div class="step-badge">4</div>
+                        <div class="step-name">Quality Gate</div>
+                        <div class="step-desc">Resolution & Blur Gate</div>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-item active">
+                        <div class="step-badge">5</div>
+                        <div class="step-name">Fashion-CLIP & Color</div>
+                        <div class="step-desc">Sex, Garment, Color, Brand</div>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-item active">
+                        <div class="step-badge">6</div>
+                        <div class="step-name">Temporal Consensus</div>
+                        <div class="step-desc">Top-5 Pools & Hysteresis</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notification Banner -->
+        <div id="notificationBanner" class="notification-banner" style="display: none;">
+            <span class="notification-icon" id="notificationIcon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </span>
+            <span class="notification-message" id="notificationMessage">Message</span>
+            <button class="notification-close" onclick="hideNotification()">&times;</button>
+        </div>
+
+        <!-- Input Mode Selection Tabs -->
+        <section class="mode-tabs-section">
+            <div class="tabs-header">
+                <button class="tab-btn active" id="tabUpload" onclick="switchTab('upload')">
+                    <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+                        <circle cx="9" cy="9" r="2"/>
+                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                    </svg>
+                    <span>Analyze Image</span>
+                </button>
+                <button class="tab-btn" id="tabVideo" onclick="switchTab('video')">
+                    <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m22 8-6 4 6 4V8Z"/>
+                        <rect width="14" height="12" x="2" y="6" rx="2" ry="2"/>
+                    </svg>
+                    <span>Analyze Video</span>
+                </button>
+                <button class="tab-btn" id="tabCamera" onclick="switchTab('camera')">
+                    <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                        <circle cx="12" cy="13" r="3"/>
+                    </svg>
+                    <span>Live Camera</span>
+                </button>
+            </div>
+
+            <!-- TAB 1: Analyze Image (Unified Multi-Person Detection + PAR) -->
+            <div class="tab-panel active" id="panelUpload">
+                <div class="panel-content">
+                    <!-- Dropzone / File Picker -->
+                    <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                        <input type="file" id="fileInput" accept=".jpg,.jpeg,.jfif,.png,image/jpeg,image/jfif,image/png" style="display: none;" onchange="handleFileSelect(event)">
+                        <div class="dropzone-icon-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" x2="12" y1="3" y2="15"/>
+                            </svg>
+                        </div>
+                        <h3>Upload Image for Multi-Person Analysis</h3>
+                        <p>Drag and drop JPG, JPEG, JFIF, or PNG file here, or click to browse</p>
+                        <span class="file-hint">Detects ALL people &bull; Multi-region pose cropping &bull; Fashion-CLIP & Color &bull; Brand Intel</span>
+                    </div>
+
+                    <!-- Image Preview & Analysis Stage -->
+                    <div class="preview-area" id="previewArea" style="display: none;">
+                        <div class="preview-header">
+                            <div class="preview-meta">
+                                <span class="preview-filename" id="previewFilename">image.jpg</span>
+                                <span class="preview-dimensions" id="previewDimensions"></span>
+                            </div>
+                            <button class="btn-secondary" onclick="clearSelectedImage()">Clear Image</button>
+                        </div>
+
+                        <!-- Canvas/Image Overlay Container -->
+                        <div class="preview-stage-container" id="previewContainer">
+                            <div class="image-stage-wrapper" id="stageWrapper">
+                                <img id="imagePreview" alt="Selected Preview">
+                                <canvas id="overlayCanvas"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="action-bar">
+                            <button class="btn-primary" id="btnAnalyzeImage" onclick="onAnalyzeClicked()">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
+                                <span id="btnAnalyzeText">Analyze All People</span>
+                            </button>
+                            <span class="stage-notice" id="stageNotice">Automatic pipeline: YOLO detection → Pose keypoints → Regional crops → Fashion-CLIP & Color.</span>
+                        </div>
+
+                        <!-- Pipeline Analysis Results Container -->
+                        <div id="pipelineResultsArea" class="results-area" style="display: none;">
+                            <div class="results-header">
+                                <h4>Image Analysis Overview</h4>
+                                <span class="badge badge-success" id="resultStatusBadge">Analysis Completed</span>
+                            </div>
+                            <div class="metrics-grid">
+                                <div class="metric-box">
+                                    <span class="metric-label">Resolution</span>
+                                    <span class="metric-value" id="metricResolution">-</span>
+                                </div>
+                                <div class="metric-box">
+                                    <span class="metric-label">Persons Detected</span>
+                                    <span class="metric-value" id="metricPersons">0</span>
+                                </div>
+                                <div class="metric-box">
+                                    <span class="metric-label">Detection Time</span>
+                                    <span class="metric-value" id="metricDetectionMs">-</span>
+                                </div>
+                                <div class="metric-box">
+                                    <span class="metric-label">Total Time</span>
+                                    <span class="metric-value" id="metricElapsed">-</span>
+                                </div>
+                            </div>
+
+                            <!-- Multi-Person Result Cards (Independent) -->
+                            <div class="detections-list-container">
+                                <div class="detections-title-wrap">
+                                    <h5 class="detections-title">Detected People</h5>
+                                    <span class="detections-subtitle" id="detectionsSubtitle">Analyzed independently across isolated person regions</span>
+                                </div>
+                                <div id="detectionsList" class="detections-list">
+                                    <!-- Populated dynamically with Person 01, Person 02, etc. -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Analyze Video (Multi-Person Sequential Tracking & Aggregation) -->
+            <div class="tab-panel" id="panelVideo">
+                <div class="panel-content">
+                    <!-- Video Dropzone -->
+                    <div class="dropzone" id="videoDropzone" onclick="document.getElementById('videoFileInput').click()">
+                        <input type="file" id="videoFileInput" accept=".mp4,.mov,.avi,.mkv,.webm,video/mp4,video/quicktime,video/x-msvideo,video/webm" style="display: none;" onchange="handleVideoFileSelect(event)">
+                        <div class="dropzone-icon-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" x2="12" y1="3" y2="15"/>
+                            </svg>
+                        </div>
+                        <h3>Upload Video for Multi-Person Tracking & Analysis</h3>
+                        <p>Drag and drop MP4, MOV, AVI, MKV, or WebM video file here, or click to browse</p>
+                        <span class="file-hint">Sequential ReID tracking &bull; Occlusion handling &bull; Per-person Top-5 best-frames & consensus</span>
+                    </div>
+
+                    <!-- Video Controls & Config -->
+                    <div class="video-config-bar" id="videoConfigBar" style="display: none;">
+                        <div class="config-item">
+                            <label for="videoFpsSelect"><strong>Sampling Rate:</strong></label>
+                            <select id="videoFpsSelect" class="form-select">
+                                <option value="1">1 FPS (Fastest / Low Detail)</option>
+                                <option value="2">2 FPS (Balanced)</option>
+                                <option value="3" selected>3 FPS (Recommended)</option>
+                                <option value="5">5 FPS (High Accuracy / Slower)</option>
+                            </select>
+                        </div>
+                        <div class="video-selected-meta">
+                            <span id="videoSelectedName">video.mp4</span>
+                            <span id="videoSelectedSize" class="text-muted">(0 MB)</span>
+                        </div>
+                        <div class="video-action-buttons">
+                            <button class="btn-primary" id="btnAnalyzeVideo" onclick="onAnalyzeVideoClicked()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
+                                <span>Start Video Analysis</span>
+                            </button>
+                            <button class="btn-secondary" onclick="clearSelectedVideo()">Clear Video</button>
+                        </div>
+                    </div>
+
+                    <!-- Video Processing Progress Area -->
+                    <div id="videoProgressArea" class="video-progress-card" style="display: none;">
+                        <div class="progress-spinner-wrap" style="margin-bottom: 0.75rem; color: #818cf8;">
+                            <svg class="progress-spinner-svg" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="animation: spin 1s infinite linear;">
+                                <circle cx="12" cy="12" r="10" stroke-opacity="0.2"/>
+                                <path d="M12 2a10 10 0 0 1 10 10" />
+                            </svg>
+                        </div>
+                        <div class="progress-details">
+                            <h4 id="videoProgressTitle">Processing Video Stream...</h4>
+                            <p id="videoProgressDesc">Sampling frames, running YOLO person detection, updating multi-person tracking, and accumulating Top-5 best-frame pools.</p>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="videoProgressBar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video Analysis Results Area -->
+                    <div id="videoResultsArea" class="results-area" style="display: none;">
+                        <!-- Video Summary Banner -->
+                        <div class="video-summary-banner">
+                            <div class="results-header">
+                                <h4>Video Analysis Overview</h4>
+                                <span class="badge badge-success" id="videoStatusBadge">Completed</span>
+                            </div>
+                            <div class="metrics-grid">
+                                <div class="metric-box">
+                                    <span class="metric-label">Unique People</span>
+                                    <span class="metric-value" id="vMetricPersons">0</span>
+                                </div>
+                                <div class="metric-box">
+                                    <span class="metric-label">Video Duration</span>
+                                    <span class="metric-value" id="vMetricDuration">0.0s</span>
+                                </div>
+                                <div class="metric-box">
+                                    <span class="metric-label">Sampled Frames</span>
+                                    <span class="metric-value" id="vMetricFrames">0</span>
+                                </div>
+                                <div class="metric-box">
+                                    <span class="metric-label">Effective FPS</span>
+                                    <span class="metric-value" id="vMetricFps">3.0</span>
+                                </div>
+                                <div class="metric-box">
+                                    <span class="metric-label">Processing Time</span>
+                                    <span class="metric-value" id="vMetricElapsed">0 ms</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Multi-Person Result Cards (Finalized & Active) -->
+                        <div class="video-persons-container">
+                            <div class="detections-title-wrap">
+                                <h5 class="detections-title">Detected People</h5>
+                                <span class="detections-subtitle">Observed person tracking histories and consensus aggregated attributes</span>
+                            </div>
+                            <div id="videoPersonsList" class="video-persons-grid">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: Live Camera (Real-Time Multi-Person Streaming & Diagnostics) -->
+            <div class="tab-panel" id="panelCamera">
+                <div class="panel-content">
+                    <div class="camera-layout">
+                        <!-- Camera Stream and Canvas Overlay Card -->
+                        <div class="camera-stream-card">
+                            <div class="camera-controls-bar">
+                                <div class="camera-source-select">
+                                    <label for="cameraSelect"><strong>Source:</strong></label>
+                                    <select id="cameraSelect" onchange="onCameraDeviceChanged()">
+                                        <option value="">Default Web Camera</option>
+                                    </select>
+                                </div>
+
+                                <div class="camera-actions">
+                                    <button class="btn-primary" id="btnStartCamera" onclick="startCamera()">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polygon points="5 3 19 12 5 21 5 3"/>
+                                        </svg>
+                                        <span>Start Camera</span>
+                                    </button>
+                                    <button class="btn-danger" id="btnStopCamera" onclick="stopCamera()" style="display: none;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect width="18" height="18" x="3" y="3" rx="2"/>
+                                        </svg>
+                                        <span>Stop Camera</span>
+                                    </button>
+                                    <button class="btn-secondary" id="btnFlipCamera" onclick="flipCamera()" title="Flip Front/Rear Camera" style="display: none;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                                            <path d="M3 3v5h5"/>
+                                            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+                                            <path d="M16 21h5v-5"/>
+                                        </svg>
+                                        <span>Flip</span>
+                                    </button>
+                                </div>
+
+                                <div class="camera-live-stats" id="cameraStats">
+                                    <span class="stat-item"><span class="stat-dot green"></span> <span id="cameraFps">0 FPS</span></span>
+                                    <span class="stat-item">Ping: <span id="cameraLatency">0ms</span></span>
+                                    <span class="stat-item">Tracks: <strong id="cameraTrackCount">0</strong></span>
+                                </div>
+                            </div>
+
+                            <!-- Video and Overlay Stage -->
+                            <div class="camera-stage-wrapper" id="cameraStageWrapper">
+                                <video id="cameraVideo" autoplay playsinline muted></video>
+                                <canvas id="cameraOverlayCanvas"></canvas>
+                                
+                                <div class="camera-placeholder" id="cameraPlaceholder">
+                                    <div class="placeholder-icon">
+                                        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                                            <circle cx="12" cy="13" r="3"/>
+                                        </svg>
+                                    </div>
+                                    <h3>Camera Inactive</h3>
+                                    <p>Select a camera source above and click <strong>Start Camera</strong> to begin real-time multi-person attribute analysis.</p>
+                                    <div class="privacy-callout">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shield-icon">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                        </svg>
+                                        <span><strong>Zero Disk Footprint:</strong> In-memory streaming only. No camera frames are saved to disk.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mobile Stream Hint -->
+                            <div class="mobile-stream-link">
+                                <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg><strong>Mobile Camera Streaming:</strong> Open this web application on your smartphone via local network/hotspot to test rear-camera real-world tracking.</span>
+                            </div>
+                        </div>
+
+                        <!-- Real-time Active Persons Cards & Quality Chips -->
+                        <div class="camera-results-sidebar">
+                            <div class="sidebar-header">
+                                <h4>Active Person Tracks</h4>
+                                <span class="badge badge-primary" id="activeTrackBadge">0 Active</span>
+                            </div>
+
+                            <!-- Person Selector Tabs -->
+                            <div class="person-tabs-container" id="personTabsContainer" style="display: none;">
+                                <div class="person-tabs-bar" id="personTabsBar"></div>
+                            </div>
+
+                            <!-- Dynamic Crop Preview Strip -->
+                            <div class="crops-strip-container" id="cropsStripContainer" style="display: none;">
+                                <div class="crops-strip-title">Recent Target Crops:</div>
+                                <div class="crops-strip" id="cropsStrip"></div>
+                            </div>
+
+                            <!-- Person Cards Container -->
+                            <div class="tracked-persons-list" id="trackedPersonsList">
+                                <div class="empty-tracks-notice" id="emptyTracksNotice">
+                                    <span>Waiting for person detections...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Developer Diagnostics & Best-Frame Inspector -->
+                    <div class="camera-debug-section">
+                        <div class="debug-header" onclick="toggleDebugAccordion()">
+                            <h4>🔍 Real-time Diagnostics & Quality Breakdown</h4>
+                            <div class="debug-controls">
+                                <button class="btn-benchmark" onclick="event.stopPropagation(); openBenchmarkModal()">📊 Benchmark Mode</button>
+                                <span class="accordion-arrow" id="debugArrow">▼</span>
+                            </div>
+                        </div>
+                        <div class="debug-content" id="debugContent" style="display: none;">
+                            <div class="debug-table-wrapper">
+                                <table class="debug-table" id="debugTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Person</th>
+                                            <th>Detection / Age</th>
+                                            <th>3D Orientation</th>
+                                            <th>Quality Scores</th>
+                                            <th>Keypoint Confidences</th>
+                                            <th>Clipping Flags</th>
+                                            <th>Consensus & State</th>
+                                            <th>Top-5 Quality Pool</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="debugTableBody">
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">No active tracks for diagnostic inspection.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Developer Diagnostics Collapsible Section (Legacy PULC PAR Test & Benchmark) -->
+        <section class="dev-diagnostics-section">
+            <div class="dev-diagnostics-header" onclick="toggleDevDiagnostics()">
+                <div class="dev-title-wrap">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    </svg>
+                    <h3>Developer Diagnostics</h3>
+                    <span class="dev-badge">Tools & Benchmarks</span>
+                </div>
+                <span class="dev-arrow" id="devArrow">▶ Click to expand Legacy PAR Test</span>
+            </div>
+
+            <div class="dev-diagnostics-content" id="devDiagnosticsContent" style="display: none;">
+                <!-- Legacy PULC PAR Test Sub-Panel -->
+                <div class="legacy-par-box">
+                    <div class="par-testing-intro">
+                        <span class="par-badge">Developer Tool</span>
+                        <h4>Legacy PULC PAR Single-Crop Test</h4>
+                        <p>Upload a single cropped person image to directly evaluate raw PP-LCNet pedestrian attribute predictions without YOLO.</p>
+                    </div>
+
+                    <!-- PAR Dropzone / File Picker -->
+                    <div class="dropzone" id="parDropzone" onclick="document.getElementById('parFileInput').click()">
+                        <input type="file" id="parFileInput" accept=".jpg,.jpeg,.jfif,.png,image/jpeg,image/jfif,image/png" style="display: none;" onchange="handleParFileSelect(event)">
+                        <div class="dropzone-icon-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="5"/>
+                                <path d="M20 21a8 8 0 0 0-16 0"/>
+                            </svg>
+                        </div>
+                        <h3>Upload Cropped Person Image</h3>
+                        <p>Drag and drop a single cropped person JPG, JPEG, JFIF, or PNG file here</p>
+                        <span class="file-hint">Direct PULC ONNX Inference &bull; 26 PA-100K Attribute Heads</span>
+                    </div>
+
+                    <!-- PAR Preview & Analysis Stage -->
+                    <div class="par-stage-area" id="parPreviewArea" style="display: none;">
+                        <div class="par-layout-grid">
+                            <div class="par-image-card">
+                                <div class="preview-header">
+                                    <div class="preview-meta">
+                                        <span class="preview-filename" id="parFilename">crop.jpg</span>
+                                        <span class="preview-dimensions" id="parDimensions">192 × 256 px</span>
+                                    </div>
+                                    <button class="btn-secondary" onclick="clearParSelectedImage()">Try Another Image</button>
+                                </div>
+                                <div class="par-crop-display">
+                                    <img id="parImagePreview" alt="Person Crop Preview">
+                                </div>
+                                <div class="par-actions">
+                                    <button class="btn-primary btn-block" id="btnAnalyzePar" onclick="onAnalyzeParClicked()">
+                                        <span id="btnAnalyzeParText">Run PULC Inference</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="par-results-card" id="parResultsCard" style="display: none;">
+                                <div class="results-header">
+                                    <h4>PULC Attribute Predictions</h4>
+                                    <span class="badge badge-success" id="parElapsedBadge">0.0 ms</span>
+                                </div>
+                                <div class="attribute-groups-container">
+                                    <div class="attr-group-card">
+                                        <div class="attr-group-title">Appearance</div>
+                                        <div class="attr-row"><span class="attr-name">Appearance Sex:</span> <span class="attr-value-badge" id="valAppearanceSex">-</span></div>
+                                        <div class="attr-row"><span class="attr-name">Age Group:</span> <span class="attr-value-badge" id="valAgeGroup">-</span></div>
+                                        <div class="attr-row"><span class="attr-name">Orientation:</span> <span class="attr-value-badge" id="valOrientation">-</span></div>
+                                    </div>
+                                    <div class="attr-group-card">
+                                        <div class="attr-group-title">Upper Body</div>
+                                        <div class="attr-row"><span class="attr-name">Sleeve:</span> <span class="attr-value-badge" id="valSleeveType">-</span></div>
+                                        <div class="attr-row"><span class="attr-name">Upper Wear:</span> <span class="attr-value-badge" id="valUpperWear">-</span></div>
+                                    </div>
+                                    <div class="attr-group-card">
+                                        <div class="attr-group-title">Lower Body & Accessories</div>
+                                        <div class="attr-row"><span class="attr-name">Lower Wear:</span> <span class="attr-value-badge" id="valLowerWear">-</span></div>
+                                        <div class="attr-row"><span class="attr-name">Footwear:</span> <span class="attr-value-badge" id="valFootwear">-</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Benchmark Mode Modal -->
+        <div id="benchmarkModal" class="modal-backdrop" style="display: none;">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h3>📊 Developer Accuracy Benchmark Mode</h3>
+                    <button class="modal-close" onclick="closeBenchmarkModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted">Enter ground truth for active person tracks to empirically measure classification accuracy and coverage.</p>
+                    
+                    <!-- Ground Truth Form -->
+                    <div class="gt-form-card">
+                        <div class="gt-form-title">Add / Update Person Ground Truth</div>
+                        <div class="gt-form-grid">
+                            <div class="form-group">
+                                <label>Person ID:</label>
+                                <input type="number" id="gtPersonId" value="1" min="1" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Appearance Sex:</label>
+                                <select id="gtSex" class="form-select">
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Skip">Skip</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Upper Type:</label>
+                                <select id="gtUpperType" class="form-select">
+                                    <option value="T-Shirt">T-Shirt</option>
+                                    <option value="Shirt">Shirt</option>
+                                    <option value="Jacket">Jacket</option>
+                                    <option value="Blazer">Blazer</option>
+                                    <option value="Hoodie">Hoodie</option>
+                                    <option value="Sweater">Sweater</option>
+                                    <option value="Other">Other</option>
+                                    <option value="Skip">Skip</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Upper Color:</label>
+                                <select id="gtUpperColor" class="form-select">
+                                    <option value="Black">Black</option>
+                                    <option value="White">White</option>
+                                    <option value="Grey">Grey</option>
+                                    <option value="Red">Red</option>
+                                    <option value="Orange">Orange</option>
+                                    <option value="Brown">Brown</option>
+                                    <option value="Yellow">Yellow</option>
+                                    <option value="Green">Green</option>
+                                    <option value="Blue">Blue</option>
+                                    <option value="Purple">Purple</option>
+                                    <option value="Pink">Pink</option>
+                                    <option value="Skip">Skip</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Lower Type:</label>
+                                <select id="gtLowerType" class="form-select">
+                                    <option value="Trousers/Pants">Trousers/Pants</option>
+                                    <option value="Jeans">Jeans</option>
+                                    <option value="Shorts">Shorts</option>
+                                    <option value="Skirt">Skirt</option>
+                                    <option value="Dress">Dress</option>
+                                    <option value="Not Visible">Not Visible</option>
+                                    <option value="Skip">Skip</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Shoes:</label>
+                                <select id="gtShoes" class="form-select">
+                                    <option value="Sneakers">Sneakers</option>
+                                    <option value="Formal Shoes">Formal Shoes</option>
+                                    <option value="Sandals">Sandals</option>
+                                    <option value="Not Visible">Not Visible</option>
+                                    <option value="Skip">Skip</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="gt-form-actions">
+                            <button class="btn-primary" onclick="submitGroundTruth()">Save Ground Truth</button>
+                            <button class="btn-secondary" onclick="resetGroundTruths()">Reset All</button>
+                        </div>
+                    </div>
+
+                    <!-- Evaluation Results Container -->
+                    <div class="benchmark-results-container">
+                        <div class="benchmark-eval-bar">
+                            <button class="btn-benchmark" onclick="evaluateBenchmark()">⚡ Run Benchmark Evaluation</button>
+                            <span id="benchmarkEvalTimestamp" class="text-muted">Not evaluated yet</span>
+                        </div>
+                        <div id="benchmarkReportCard" style="display: none;">
+                            <div class="benchmark-score-banner">
+                                <div class="benchmark-big-score" id="benchmarkOverallScore">0%</div>
+                                <div class="benchmark-score-label">Overall Empirical Accuracy</div>
+                            </div>
+                            <div class="benchmark-table-wrap">
+                                <table class="debug-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Attribute</th>
+                                            <th>Total Samples</th>
+                                            <th>Correct</th>
+                                            <th>Incorrect</th>
+                                            <th>Accuracy</th>
+                                            <th>Gated / Insufficient</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="benchmarkTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Image / Person Crop Lightbox Modal -->
+        <div id="imageModal" class="image-modal-backdrop" style="display: none;" onclick="closeImageModal(event)">
+            <div class="image-modal-content" onclick="event.stopPropagation()">
+                <div class="image-modal-header">
+                    <div class="image-modal-title" id="imageModalTitle">Person Crop Preview</div>
+                    <button class="image-modal-close" onclick="closeImageModal()">&times;</button>
+                </div>
+                <div class="image-modal-body">
+                    <img id="imageModalImg" src="" alt="Full Preview">
+                </div>
+                <div class="image-modal-footer">
+                    <span id="imageModalCaption" class="image-modal-caption"></span>
+                    <button class="btn-secondary" onclick="closeImageModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/site.js"></script>
+</body>
+</html>

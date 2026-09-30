@@ -1,0 +1,1451 @@
+{
+  "total_samples_evaluated": 19,
+  "model_b_mean_latency_ms": 279.81,
+  "fashion_clip_mean_latency_ms": 78.45,
+  "results": [
+    {
+      "sample_id": 1,
+      "source_file": "young-man-standing-in-middle-of-road-on-sunny-day-JMPF00583.jpg",
+      "person_desc": "Young man in dark blue T-shirt and beige khaki pants",
+      "region": "upper",
+      "ground_truth": "T-shirt",
+      "notes": "Navy blue crewneck short-sleeve T-shirt",
+      "crop_dimensions": "543x279",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_1_upper.jpg",
+      "model_b": {
+        "latency_ms": 233.466,
+        "top1_label": "Long Pants",
+        "top1_prob": 0.10699731,
+        "top2_label": "Jeans",
+        "top2_prob": 0.08548338,
+        "margin": 0.02151393,
+        "top5_full": [
+          {
+            "label": "Long Pants",
+            "prob": 0.10699731
+          },
+          {
+            "label": "Jeans",
+            "prob": 0.08548338
+          },
+          {
+            "label": "Dresses",
+            "prob": 0.07670245
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.07308387
+          },
+          {
+            "label": "Sweater",
+            "prob": 0.0722778
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 126.984,
+        "top1_label": "T-Shirt",
+        "top1_prob": 0.38334503,
+        "top1_cos_sim": 0.29945421,
+        "top2_label": "Other",
+        "top2_prob": 0.15001702,
+        "margin": 0.23332801,
+        "top5_full": [
+          {
+            "label": "T-Shirt",
+            "prob": 0.38334503,
+            "cos_sim": 0.29945421
+          },
+          {
+            "label": "Other",
+            "prob": 0.15001702,
+            "cos_sim": 0.23378114
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.13782453,
+            "cos_sim": 0.22784743
+          },
+          {
+            "label": "Hoodie",
+            "prob": 0.11923523,
+            "cos_sim": 0.21770561
+          },
+          {
+            "label": "Sweater",
+            "prob": 0.11249074,
+            "cos_sim": 0.21362969
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 2,
+      "source_file": "young-man-standing-in-middle-of-road-on-sunny-day-JMPF00583.jpg",
+      "person_desc": "Young man in dark blue T-shirt and beige khaki pants",
+      "region": "lower",
+      "ground_truth": "Long Pants",
+      "notes": "Beige/khaki full-length trousers/long pants",
+      "crop_dimensions": "443x311",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_2_lower.jpg",
+      "model_b": {
+        "latency_ms": 270.13,
+        "top1_label": "Dresses",
+        "top1_prob": 0.10228054,
+        "top2_label": "Long Pants",
+        "top2_prob": 0.08911878,
+        "margin": 0.01316176,
+        "top5_full": [
+          {
+            "label": "Dresses",
+            "prob": 0.10228054
+          },
+          {
+            "label": "Long Pants",
+            "prob": 0.08911878
+          },
+          {
+            "label": "Jeans",
+            "prob": 0.07615763
+          },
+          {
+            "label": "Coat",
+            "prob": 0.07447924
+          },
+          {
+            "label": "Sweater",
+            "prob": 0.07105896
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 82.71,
+        "top1_label": "Jeans",
+        "top1_prob": 0.23984402,
+        "top1_cos_sim": 0.2461812,
+        "top2_label": "Other",
+        "top2_prob": 0.18743331,
+        "margin": 0.05241071,
+        "top5_full": [
+          {
+            "label": "Jeans",
+            "prob": 0.23984402,
+            "cos_sim": 0.2461812
+          },
+          {
+            "label": "Other",
+            "prob": 0.18743331,
+            "cos_sim": 0.22892161
+          },
+          {
+            "label": "Shorts",
+            "prob": 0.18341034,
+            "cos_sim": 0.22740281
+          },
+          {
+            "label": "Trousers",
+            "prob": 0.14383548,
+            "cos_sim": 0.2103889
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.14337003,
+            "cos_sim": 0.21016201
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 3,
+      "source_file": "boy.jpg",
+      "person_desc": "Boy in striped/casual polo/t-shirt and dark pants/shorts",
+      "region": "upper",
+      "ground_truth": "T-shirt",
+      "notes": "Casual young boy t-shirt/polo",
+      "crop_dimensions": "321x301",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_3_upper.jpg",
+      "model_b": {
+        "latency_ms": 277.477,
+        "top1_label": "Blazer",
+        "top1_prob": 0.192252,
+        "top2_label": "Coat",
+        "top2_prob": 0.1093762,
+        "margin": 0.0828758,
+        "top5_full": [
+          {
+            "label": "Blazer",
+            "prob": 0.192252
+          },
+          {
+            "label": "Coat",
+            "prob": 0.1093762
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.08499091
+          },
+          {
+            "label": "Denim Jacket",
+            "prob": 0.07137679
+          },
+          {
+            "label": "Sports Jacket",
+            "prob": 0.0597119
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 67.116,
+        "top1_label": "Blazer",
+        "top1_prob": 0.41975532,
+        "top1_cos_sim": 0.31955576,
+        "top2_label": "Shirt",
+        "top2_prob": 0.16822663,
+        "margin": 0.2515287,
+        "top5_full": [
+          {
+            "label": "Blazer",
+            "prob": 0.41975532,
+            "cos_sim": 0.31955576
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.16822663,
+            "cos_sim": 0.25555056
+          },
+          {
+            "label": "Other",
+            "prob": 0.15581228,
+            "cos_sim": 0.25018436
+          },
+          {
+            "label": "Jacket",
+            "prob": 0.09591701,
+            "cos_sim": 0.21622255
+          },
+          {
+            "label": "T-Shirt",
+            "prob": 0.06729193,
+            "cos_sim": 0.19141154
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 4,
+      "source_file": "boy.jpg",
+      "person_desc": "Boy in striped/casual polo/t-shirt and dark pants/shorts",
+      "region": "lower",
+      "ground_truth": "Jeans",
+      "notes": "Casual pants/jeans",
+      "crop_dimensions": "275x288",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_4_lower.jpg",
+      "model_b": {
+        "latency_ms": 336.58,
+        "top1_label": "Long Pants",
+        "top1_prob": 0.14468408,
+        "top2_label": "Blazer",
+        "top2_prob": 0.10940181,
+        "margin": 0.03528226,
+        "top5_full": [
+          {
+            "label": "Long Pants",
+            "prob": 0.14468408
+          },
+          {
+            "label": "Blazer",
+            "prob": 0.10940181
+          },
+          {
+            "label": "Jeans",
+            "prob": 0.10245869
+          },
+          {
+            "label": "Coat",
+            "prob": 0.07823072
+          },
+          {
+            "label": "Denim Jacket",
+            "prob": 0.07428418
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 63.365,
+        "top1_label": "Trousers",
+        "top1_prob": 0.43316517,
+        "top1_cos_sim": 0.34388319,
+        "top2_label": "Other",
+        "top2_prob": 0.24006887,
+        "margin": 0.1930963,
+        "top5_full": [
+          {
+            "label": "Trousers",
+            "prob": 0.43316517,
+            "cos_sim": 0.34388319
+          },
+          {
+            "label": "Other",
+            "prob": 0.24006887,
+            "cos_sim": 0.30256966
+          },
+          {
+            "label": "Jeans",
+            "prob": 0.14904742,
+            "cos_sim": 0.26920336
+          },
+          {
+            "label": "Shorts",
+            "prob": 0.08813844,
+            "cos_sim": 0.23242846
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.05631501,
+            "cos_sim": 0.20107213
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 5,
+      "source_file": "female.jpg",
+      "person_desc": "Woman in fashionable dress / top",
+      "region": "upper",
+      "ground_truth": "Dresses",
+      "notes": "Floral one-piece dress / elegant dress top",
+      "crop_dimensions": "173x162",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_5_upper.jpg",
+      "model_b": {
+        "latency_ms": 273.239,
+        "top1_label": "Skirt",
+        "top1_prob": 0.08217166,
+        "top2_label": "Dresses",
+        "top2_prob": 0.08023859,
+        "margin": 0.00193308,
+        "top5_full": [
+          {
+            "label": "Skirt",
+            "prob": 0.08217166
+          },
+          {
+            "label": "Dresses",
+            "prob": 0.08023859
+          },
+          {
+            "label": "Sweater",
+            "prob": 0.0771187
+          },
+          {
+            "label": "Jeans",
+            "prob": 0.07319232
+          },
+          {
+            "label": "Sports Jacket",
+            "prob": 0.06752807
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 96.733,
+        "top1_label": "Shirt",
+        "top1_prob": 0.19085191,
+        "top1_cos_sim": 0.21172434,
+        "top2_label": "Other",
+        "top2_prob": 0.1518957,
+        "margin": 0.03895621,
+        "top5_full": [
+          {
+            "label": "Shirt",
+            "prob": 0.19085191,
+            "cos_sim": 0.21172434
+          },
+          {
+            "label": "Other",
+            "prob": 0.1518957,
+            "cos_sim": 0.19574308
+          },
+          {
+            "label": "T-Shirt",
+            "prob": 0.14316658,
+            "cos_sim": 0.19160011
+          },
+          {
+            "label": "Blazer",
+            "prob": 0.13366659,
+            "cos_sim": 0.18679389
+          },
+          {
+            "label": "Hoodie",
+            "prob": 0.13235273,
+            "cos_sim": 0.18610243
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 6,
+      "source_file": "female.jpg",
+      "person_desc": "Woman in fashionable dress / top",
+      "region": "lower",
+      "ground_truth": "Dresses",
+      "notes": "Bottom of dress / skirt",
+      "crop_dimensions": "173x162",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_6_lower.jpg",
+      "model_b": {
+        "latency_ms": 320.105,
+        "top1_label": "Blazer",
+        "top1_prob": 0.08800314,
+        "top2_label": "Dresses",
+        "top2_prob": 0.07860852,
+        "margin": 0.00939462,
+        "top5_full": [
+          {
+            "label": "Blazer",
+            "prob": 0.08800314
+          },
+          {
+            "label": "Dresses",
+            "prob": 0.07860852
+          },
+          {
+            "label": "Coat",
+            "prob": 0.07351032
+          },
+          {
+            "label": "Long Pants",
+            "prob": 0.07221957
+          },
+          {
+            "label": "Jeans",
+            "prob": 0.07218985
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 63.093,
+        "top1_label": "Trousers",
+        "top1_prob": 0.24289774,
+        "top1_cos_sim": 0.23178363,
+        "top2_label": "Other",
+        "top2_prob": 0.17110802,
+        "margin": 0.07178972,
+        "top5_full": [
+          {
+            "label": "Trousers",
+            "prob": 0.24289774,
+            "cos_sim": 0.23178363
+          },
+          {
+            "label": "Other",
+            "prob": 0.17110802,
+            "cos_sim": 0.20725945
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.16480551,
+            "cos_sim": 0.20463242
+          },
+          {
+            "label": "Dress",
+            "prob": 0.15818841,
+            "cos_sim": 0.20176387
+          },
+          {
+            "label": "Shorts",
+            "prob": 0.13894902,
+            "cos_sim": 0.19268629
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 7,
+      "source_file": "femalealone.jpg",
+      "person_desc": "Female pedestrian in casual jacket/sweater and jeans",
+      "region": "upper",
+      "ground_truth": "Jacket",
+      "notes": "Outerwear zipper jacket/sweater",
+      "crop_dimensions": "245x263",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_7_upper.jpg",
+      "model_b": {
+        "latency_ms": 259.116,
+        "top1_label": "Dresses",
+        "top1_prob": 0.14836226,
+        "top2_label": "Skirt",
+        "top2_prob": 0.11297496,
+        "margin": 0.03538731,
+        "top5_full": [
+          {
+            "label": "Dresses",
+            "prob": 0.14836226
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.11297496
+          },
+          {
+            "label": "Shorts",
+            "prob": 0.09018922
+          },
+          {
+            "label": "T-shirt",
+            "prob": 0.07665145
+          },
+          {
+            "label": "Sweater",
+            "prob": 0.07147982
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 114.118,
+        "top1_label": "Other",
+        "top1_prob": 0.26002312,
+        "top1_cos_sim": 0.17732771,
+        "top2_label": "Shirt",
+        "top2_prob": 0.17281524,
+        "margin": 0.08720787,
+        "top5_full": [
+          {
+            "label": "Other",
+            "prob": 0.26002312,
+            "cos_sim": 0.17732771
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.17281524,
+            "cos_sim": 0.14872938
+          },
+          {
+            "label": "T-Shirt",
+            "prob": 0.15730572,
+            "cos_sim": 0.14214715
+          },
+          {
+            "label": "Sweater",
+            "prob": 0.14971476,
+            "cos_sim": 0.138685
+          },
+          {
+            "label": "Hoodie",
+            "prob": 0.10092057,
+            "cos_sim": 0.11107714
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 8,
+      "source_file": "femalealone.jpg",
+      "person_desc": "Female pedestrian in casual jacket/sweater and jeans",
+      "region": "lower",
+      "ground_truth": "Jeans",
+      "notes": "Denim jeans",
+      "crop_dimensions": "204x263",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_8_lower.jpg",
+      "model_b": {
+        "latency_ms": 300.319,
+        "top1_label": "Dresses",
+        "top1_prob": 0.1762124,
+        "top2_label": "Skirt",
+        "top2_prob": 0.13162164,
+        "margin": 0.04459076,
+        "top5_full": [
+          {
+            "label": "Dresses",
+            "prob": 0.1762124
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.13162164
+          },
+          {
+            "label": "Blazer",
+            "prob": 0.07386684
+          },
+          {
+            "label": "Shorts",
+            "prob": 0.0612832
+          },
+          {
+            "label": "Sports Jacket",
+            "prob": 0.06019567
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 83.848,
+        "top1_label": "Skirt",
+        "top1_prob": 0.2890065,
+        "top1_cos_sim": 0.28075173,
+        "top2_label": "Shorts",
+        "top2_prob": 0.20329876,
+        "margin": 0.08570774,
+        "top5_full": [
+          {
+            "label": "Skirt",
+            "prob": 0.2890065,
+            "cos_sim": 0.28075173
+          },
+          {
+            "label": "Shorts",
+            "prob": 0.20329876,
+            "cos_sim": 0.25612766
+          },
+          {
+            "label": "Dress",
+            "prob": 0.19124804,
+            "cos_sim": 0.25185028
+          },
+          {
+            "label": "Other",
+            "prob": 0.18456402,
+            "cos_sim": 0.24936004
+          },
+          {
+            "label": "Trousers",
+            "prob": 0.08747454,
+            "cos_sim": 0.19709463
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 9,
+      "source_file": "pexels.jpg",
+      "person_desc": "Pedestrian walking outdoors in street clothing",
+      "region": "upper",
+      "ground_truth": "T-shirt",
+      "notes": "Casual summer top/t-shirt",
+      "crop_dimensions": "350x266",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_9_upper.jpg",
+      "model_b": {
+        "latency_ms": 248.465,
+        "top1_label": "Dresses",
+        "top1_prob": 0.08894327,
+        "top2_label": "Jeans",
+        "top2_prob": 0.07485444,
+        "margin": 0.01408883,
+        "top5_full": [
+          {
+            "label": "Dresses",
+            "prob": 0.08894327
+          },
+          {
+            "label": "Jeans",
+            "prob": 0.07485444
+          },
+          {
+            "label": "T-shirt",
+            "prob": 0.07375366
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.07168354
+          },
+          {
+            "label": "Sports Jacket",
+            "prob": 0.07126162
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 67.916,
+        "top1_label": "Other",
+        "top1_prob": 0.19766395,
+        "top1_cos_sim": 0.17885202,
+        "top2_label": "T-Shirt",
+        "top2_prob": 0.1772419,
+        "margin": 0.02042204,
+        "top5_full": [
+          {
+            "label": "Other",
+            "prob": 0.19766395,
+            "cos_sim": 0.17885202
+          },
+          {
+            "label": "T-Shirt",
+            "prob": 0.1772419,
+            "cos_sim": 0.17121832
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.15645551,
+            "cos_sim": 0.16248626
+          },
+          {
+            "label": "Jacket",
+            "prob": 0.13803237,
+            "cos_sim": 0.15371642
+          },
+          {
+            "label": "Sweater",
+            "prob": 0.12712308,
+            "cos_sim": 0.14795314
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 10,
+      "source_file": "pexels.jpg",
+      "person_desc": "Pedestrian walking outdoors in street clothing",
+      "region": "lower",
+      "ground_truth": "Shorts",
+      "notes": "Casual shorts",
+      "crop_dimensions": "300x267",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_10_lower.jpg",
+      "model_b": {
+        "latency_ms": 288.214,
+        "top1_label": "Dresses",
+        "top1_prob": 0.08053952,
+        "top2_label": "Jeans",
+        "top2_prob": 0.07652323,
+        "margin": 0.0040163,
+        "top5_full": [
+          {
+            "label": "Dresses",
+            "prob": 0.08053952
+          },
+          {
+            "label": "Jeans",
+            "prob": 0.07652323
+          },
+          {
+            "label": "Long Pants",
+            "prob": 0.07209398
+          },
+          {
+            "label": "Polo",
+            "prob": 0.07022431
+          },
+          {
+            "label": "Sweater",
+            "prob": 0.06979589
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 75.921,
+        "top1_label": "Jeans",
+        "top1_prob": 0.19636971,
+        "top1_cos_sim": 0.1993279,
+        "top2_label": "Other",
+        "top2_prob": 0.18504241,
+        "margin": 0.0113273,
+        "top5_full": [
+          {
+            "label": "Jeans",
+            "prob": 0.19636971,
+            "cos_sim": 0.1993279
+          },
+          {
+            "label": "Other",
+            "prob": 0.18504241,
+            "cos_sim": 0.19516891
+          },
+          {
+            "label": "Dress",
+            "prob": 0.17660478,
+            "cos_sim": 0.19190197
+          },
+          {
+            "label": "Shorts",
+            "prob": 0.17453506,
+            "cos_sim": 0.19107676
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.13703978,
+            "cos_sim": 0.17414695
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 11,
+      "source_file": "crop.jpg",
+      "person_desc": "Close crop of pedestrian upper body",
+      "region": "upper",
+      "ground_truth": "Shirt",
+      "notes": "Collared button shirt",
+      "crop_dimensions": "530x551",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_11_upper.jpg",
+      "model_b": {
+        "latency_ms": 269.355,
+        "top1_label": "Shirt",
+        "top1_prob": 0.10263789,
+        "top2_label": "Blazer",
+        "top2_prob": 0.09229878,
+        "margin": 0.01033912,
+        "top5_full": [
+          {
+            "label": "Shirt",
+            "prob": 0.10263789
+          },
+          {
+            "label": "Blazer",
+            "prob": 0.09229878
+          },
+          {
+            "label": "Coat",
+            "prob": 0.0837976
+          },
+          {
+            "label": "Dresses",
+            "prob": 0.07288445
+          },
+          {
+            "label": "Denim Jacket",
+            "prob": 0.06789218
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 77.205,
+        "top1_label": "Blazer",
+        "top1_prob": 0.22586038,
+        "top1_cos_sim": 0.25576335,
+        "top2_label": "Shirt",
+        "top2_prob": 0.19382848,
+        "margin": 0.0320319,
+        "top5_full": [
+          {
+            "label": "Blazer",
+            "prob": 0.22586038,
+            "cos_sim": 0.25576335
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.19382848,
+            "cos_sim": 0.24505731
+          },
+          {
+            "label": "Jacket",
+            "prob": 0.15891233,
+            "cos_sim": 0.23115385
+          },
+          {
+            "label": "Hoodie",
+            "prob": 0.12608482,
+            "cos_sim": 0.214956
+          },
+          {
+            "label": "Sweater",
+            "prob": 0.10443135,
+            "cos_sim": 0.20176625
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 12,
+      "source_file": "check.jpg",
+      "person_desc": "Person wearing plaid / checkered shirt / clothing",
+      "region": "upper",
+      "ground_truth": "Shirt",
+      "notes": "Patterned button shirt / top",
+      "crop_dimensions": "420x280",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_12_upper.jpg",
+      "model_b": {
+        "latency_ms": 258.791,
+        "top1_label": "Long Pants",
+        "top1_prob": 0.16777906,
+        "top2_label": "Jeans",
+        "top2_prob": 0.1159295,
+        "margin": 0.05184956,
+        "top5_full": [
+          {
+            "label": "Long Pants",
+            "prob": 0.16777906
+          },
+          {
+            "label": "Jeans",
+            "prob": 0.1159295
+          },
+          {
+            "label": "Dresses",
+            "prob": 0.0887024
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.08310854
+          },
+          {
+            "label": "Shorts",
+            "prob": 0.06597758
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 64.098,
+        "top1_label": "T-Shirt",
+        "top1_prob": 0.23172396,
+        "top1_cos_sim": 0.22019254,
+        "top2_label": "Shirt",
+        "top2_prob": 0.16006629,
+        "margin": 0.07165767,
+        "top5_full": [
+          {
+            "label": "T-Shirt",
+            "prob": 0.23172396,
+            "cos_sim": 0.22019254
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.16006629,
+            "cos_sim": 0.19429542
+          },
+          {
+            "label": "Sweater",
+            "prob": 0.15478338,
+            "cos_sim": 0.19194612
+          },
+          {
+            "label": "Other",
+            "prob": 0.14170581,
+            "cos_sim": 0.18576698
+          },
+          {
+            "label": "Blazer",
+            "prob": 0.1134566,
+            "cos_sim": 0.17020369
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 13,
+      "source_file": "check2.jpg",
+      "person_desc": "Person wearing layered jacket/coat",
+      "region": "upper",
+      "ground_truth": "Coat",
+      "notes": "Outer winter coat / jacket",
+      "crop_dimensions": "292x438",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_13_upper.jpg",
+      "model_b": {
+        "latency_ms": 283.51,
+        "top1_label": "Blazer",
+        "top1_prob": 0.13329816,
+        "top2_label": "Long Pants",
+        "top2_prob": 0.12808532,
+        "margin": 0.00521284,
+        "top5_full": [
+          {
+            "label": "Blazer",
+            "prob": 0.13329816
+          },
+          {
+            "label": "Long Pants",
+            "prob": 0.12808532
+          },
+          {
+            "label": "Coat",
+            "prob": 0.11372867
+          },
+          {
+            "label": "Jeans",
+            "prob": 0.09246466
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.06559399
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 72.747,
+        "top1_label": "Blazer",
+        "top1_prob": 0.31758802,
+        "top1_cos_sim": 0.27693471,
+        "top2_label": "Shirt",
+        "top2_prob": 0.17120155,
+        "margin": 0.14638647,
+        "top5_full": [
+          {
+            "label": "Blazer",
+            "prob": 0.31758802,
+            "cos_sim": 0.27693471
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.17120155,
+            "cos_sim": 0.23368077
+          },
+          {
+            "label": "Other",
+            "prob": 0.1357908,
+            "cos_sim": 0.21745995
+          },
+          {
+            "label": "Jacket",
+            "prob": 0.12444675,
+            "cos_sim": 0.21135332
+          },
+          {
+            "label": "Sweater",
+            "prob": 0.09789978,
+            "cos_sim": 0.19455796
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 14,
+      "source_file": "walkroad_frame_15.jpg",
+      "person_desc": "WalkRoad.mp4 video frame 15 pedestrian",
+      "region": "upper",
+      "ground_truth": "T-shirt",
+      "notes": "Pedestrian upper body frame 15",
+      "crop_dimensions": "252x448",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_14_upper.jpg",
+      "model_b": {
+        "latency_ms": 324.185,
+        "top1_label": "Coat",
+        "top1_prob": 0.09450799,
+        "top2_label": "Dresses",
+        "top2_prob": 0.08534674,
+        "margin": 0.00916126,
+        "top5_full": [
+          {
+            "label": "Coat",
+            "prob": 0.09450799
+          },
+          {
+            "label": "Dresses",
+            "prob": 0.08534674
+          },
+          {
+            "label": "Blazer",
+            "prob": 0.08467694
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.07886113
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.07045673
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 81.428,
+        "top1_label": "Hoodie",
+        "top1_prob": 0.2212733,
+        "top1_cos_sim": 0.19951452,
+        "top2_label": "Jacket",
+        "top2_prob": 0.16055197,
+        "margin": 0.06072133,
+        "top5_full": [
+          {
+            "label": "Hoodie",
+            "prob": 0.2212733,
+            "cos_sim": 0.19951452
+          },
+          {
+            "label": "Jacket",
+            "prob": 0.16055197,
+            "cos_sim": 0.17705986
+          },
+          {
+            "label": "Blazer",
+            "prob": 0.14328173,
+            "cos_sim": 0.16909352
+          },
+          {
+            "label": "T-Shirt",
+            "prob": 0.13471144,
+            "cos_sim": 0.16477607
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.12397952,
+            "cos_sim": 0.15896477
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 15,
+      "source_file": "walkroad_frame_15.jpg",
+      "person_desc": "WalkRoad.mp4 video frame 15 pedestrian",
+      "region": "lower",
+      "ground_truth": "Long Pants",
+      "notes": "Pedestrian lower body frame 15",
+      "crop_dimensions": "252x487",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_15_lower.jpg",
+      "model_b": {
+        "latency_ms": 264.208,
+        "top1_label": "Dresses",
+        "top1_prob": 0.10946599,
+        "top2_label": "Long Pants",
+        "top2_prob": 0.08474752,
+        "margin": 0.02471846,
+        "top5_full": [
+          {
+            "label": "Dresses",
+            "prob": 0.10946599
+          },
+          {
+            "label": "Long Pants",
+            "prob": 0.08474752
+          },
+          {
+            "label": "Denim Jacket",
+            "prob": 0.07457152
+          },
+          {
+            "label": "Coat",
+            "prob": 0.07289083
+          },
+          {
+            "label": "Jeans",
+            "prob": 0.06988802
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 62.908,
+        "top1_label": "Jeans",
+        "top1_prob": 0.23760588,
+        "top1_cos_sim": 0.25404787,
+        "top2_label": "Skirt",
+        "top2_prob": 0.183282,
+        "margin": 0.05432388,
+        "top5_full": [
+          {
+            "label": "Jeans",
+            "prob": 0.23760588,
+            "cos_sim": 0.25404787
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.183282,
+            "cos_sim": 0.23587675
+          },
+          {
+            "label": "Other",
+            "prob": 0.16830616,
+            "cos_sim": 0.22990987
+          },
+          {
+            "label": "Dress",
+            "prob": 0.14036865,
+            "cos_sim": 0.21720399
+          },
+          {
+            "label": "Shorts",
+            "prob": 0.13893304,
+            "cos_sim": 0.21648438
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 16,
+      "source_file": "walkroad_frame_45.jpg",
+      "person_desc": "WalkRoad.mp4 video frame 45 pedestrian",
+      "region": "upper",
+      "ground_truth": "T-shirt",
+      "notes": "Pedestrian upper body frame 45",
+      "crop_dimensions": "252x448",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_16_upper.jpg",
+      "model_b": {
+        "latency_ms": 260.66,
+        "top1_label": "Coat",
+        "top1_prob": 0.08622315,
+        "top2_label": "Dresses",
+        "top2_prob": 0.08254107,
+        "margin": 0.00368208,
+        "top5_full": [
+          {
+            "label": "Coat",
+            "prob": 0.08622315
+          },
+          {
+            "label": "Dresses",
+            "prob": 0.08254107
+          },
+          {
+            "label": "Blazer",
+            "prob": 0.0817496
+          },
+          {
+            "label": "Jeans",
+            "prob": 0.07637481
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.07555062
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 76.774,
+        "top1_label": "Hoodie",
+        "top1_prob": 0.20487842,
+        "top1_cos_sim": 0.19116467,
+        "top2_label": "Jacket",
+        "top2_prob": 0.15110718,
+        "margin": 0.05377124,
+        "top5_full": [
+          {
+            "label": "Hoodie",
+            "prob": 0.20487842,
+            "cos_sim": 0.19116467
+          },
+          {
+            "label": "Jacket",
+            "prob": 0.15110718,
+            "cos_sim": 0.16985476
+          },
+          {
+            "label": "T-Shirt",
+            "prob": 0.14542737,
+            "cos_sim": 0.16717288
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.13023484,
+            "cos_sim": 0.15944925
+          },
+          {
+            "label": "Sweater",
+            "prob": 0.12614215,
+            "cos_sim": 0.15721416
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 17,
+      "source_file": "walkroad_frame_45.jpg",
+      "person_desc": "WalkRoad.mp4 video frame 45 pedestrian",
+      "region": "lower",
+      "ground_truth": "Long Pants",
+      "notes": "Pedestrian lower body frame 45",
+      "crop_dimensions": "252x487",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_17_lower.jpg",
+      "model_b": {
+        "latency_ms": 306.618,
+        "top1_label": "Dresses",
+        "top1_prob": 0.11800861,
+        "top2_label": "Denim Jacket",
+        "top2_prob": 0.07849709,
+        "margin": 0.03951152,
+        "top5_full": [
+          {
+            "label": "Dresses",
+            "prob": 0.11800861
+          },
+          {
+            "label": "Denim Jacket",
+            "prob": 0.07849709
+          },
+          {
+            "label": "Coat",
+            "prob": 0.07473966
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.07088123
+          },
+          {
+            "label": "Long Pants",
+            "prob": 0.066544
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 67.942,
+        "top1_label": "Jeans",
+        "top1_prob": 0.23927225,
+        "top1_cos_sim": 0.24995254,
+        "top2_label": "Other",
+        "top2_prob": 0.2019593,
+        "margin": 0.03731295,
+        "top5_full": [
+          {
+            "label": "Jeans",
+            "prob": 0.23927225,
+            "cos_sim": 0.24995254
+          },
+          {
+            "label": "Other",
+            "prob": 0.2019593,
+            "cos_sim": 0.23808503
+          },
+          {
+            "label": "Shorts",
+            "prob": 0.19412038,
+            "cos_sim": 0.23531389
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.14071756,
+            "cos_sim": 0.21279323
+          },
+          {
+            "label": "Trousers",
+            "prob": 0.13330834,
+            "cos_sim": 0.20900694
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 18,
+      "source_file": "walkroad_frame_90.jpg",
+      "person_desc": "WalkRoad.mp4 video frame 90 pedestrian",
+      "region": "upper",
+      "ground_truth": "T-shirt",
+      "notes": "Pedestrian upper body frame 90",
+      "crop_dimensions": "252x448",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_18_upper.jpg",
+      "model_b": {
+        "latency_ms": 267.964,
+        "top1_label": "Dresses",
+        "top1_prob": 0.108986,
+        "top2_label": "Coat",
+        "top2_prob": 0.08000341,
+        "margin": 0.02898259,
+        "top5_full": [
+          {
+            "label": "Dresses",
+            "prob": 0.108986
+          },
+          {
+            "label": "Coat",
+            "prob": 0.08000341
+          },
+          {
+            "label": "Blazer",
+            "prob": 0.07517678
+          },
+          {
+            "label": "Shirt",
+            "prob": 0.0732251
+          },
+          {
+            "label": "Denim Jacket",
+            "prob": 0.06939392
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 71.299,
+        "top1_label": "Hoodie",
+        "top1_prob": 0.18325295,
+        "top1_cos_sim": 0.1785654,
+        "top2_label": "Jacket",
+        "top2_prob": 0.17343852,
+        "margin": 0.00981443,
+        "top5_full": [
+          {
+            "label": "Hoodie",
+            "prob": 0.18325295,
+            "cos_sim": 0.1785654
+          },
+          {
+            "label": "Jacket",
+            "prob": 0.17343852,
+            "cos_sim": 0.1747123
+          },
+          {
+            "label": "T-Shirt",
+            "prob": 0.14811364,
+            "cos_sim": 0.16366327
+          },
+          {
+            "label": "Other",
+            "prob": 0.14035187,
+            "cos_sim": 0.15989536
+          },
+          {
+            "label": "Sweater",
+            "prob": 0.13471279,
+            "cos_sim": 0.15702483
+          }
+        ]
+      }
+    },
+    {
+      "sample_id": 19,
+      "source_file": "walkroad_frame_90.jpg",
+      "person_desc": "WalkRoad.mp4 video frame 90 pedestrian",
+      "region": "lower",
+      "ground_truth": "Long Pants",
+      "notes": "Pedestrian lower body frame 90",
+      "crop_dimensions": "252x487",
+      "crop_saved_path": "d:\\Mann\\Project\\VisionAttributeAI\\benchmark\\model-b\\crop_sample_19_lower.jpg",
+      "model_b": {
+        "latency_ms": 273.977,
+        "top1_label": "Hoodie",
+        "top1_prob": 0.0907215,
+        "top2_label": "Dresses",
+        "top2_prob": 0.08746681,
+        "margin": 0.00325469,
+        "top5_full": [
+          {
+            "label": "Hoodie",
+            "prob": 0.0907215
+          },
+          {
+            "label": "Dresses",
+            "prob": 0.08746681
+          },
+          {
+            "label": "Denim Jacket",
+            "prob": 0.08419959
+          },
+          {
+            "label": "Coat",
+            "prob": 0.0817503
+          },
+          {
+            "label": "Blazer",
+            "prob": 0.07898336
+          }
+        ]
+      },
+      "fashion_clip": {
+        "latency_ms": 74.333,
+        "top1_label": "Jeans",
+        "top1_prob": 0.23704524,
+        "top1_cos_sim": 0.24201687,
+        "top2_label": "Other",
+        "top2_prob": 0.18333455,
+        "margin": 0.05371069,
+        "top5_full": [
+          {
+            "label": "Jeans",
+            "prob": 0.23704524,
+            "cos_sim": 0.24201687
+          },
+          {
+            "label": "Other",
+            "prob": 0.18333455,
+            "cos_sim": 0.22403118
+          },
+          {
+            "label": "Shorts",
+            "prob": 0.18195884,
+            "cos_sim": 0.22350393
+          },
+          {
+            "label": "Skirt",
+            "prob": 0.15309854,
+            "cos_sim": 0.21141502
+          },
+          {
+            "label": "Trousers",
+            "prob": 0.13024823,
+            "cos_sim": 0.20010024
+          }
+        ]
+      }
+    }
+  ]
+}
