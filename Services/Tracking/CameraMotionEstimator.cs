@@ -60,12 +60,13 @@ public class CameraMotionEstimator : ICameraMotionEstimator
             else Cv2.CvtColor(currSmall, currGray, ColorConversionCodes.BGR2GRAY);
 
             // 2. Extract Shi-Tomasi corners on previous frame
+            using var featureMask = new Mat();
             Point2f[] corners = Cv2.GoodFeaturesToTrack(
                 prevGray,
                 maxCorners: MaxCorners,
                 qualityLevel: QualityLevel,
                 minDistance: MinDistance,
-                mask: null,
+                mask: featureMask,
                 blockSize: 3,
                 useHarrisDetector: false,
                 k: 0.04);

@@ -90,7 +90,7 @@ public static class LiveCameraStartupDiagnosticRunner
             ClipTextModelPath = "models/par/fashion_clip_text.onnx"
         });
         var clipLogger = yoloLoggerFactory.CreateLogger<FashionClipService>();
-        var fashionClipService = new FashionClipService(clipOpt, clipLogger);
+        var fashionClipService = new FashionClipService(clipOpt, clipLogger, new ClothingColorService());
         clipServiceSw.Stop();
         double promptEmbeddingTime = clipServiceSw.Elapsed.TotalMilliseconds - clipVisionSw.Elapsed.TotalMilliseconds - clipTextSw.Elapsed.TotalMilliseconds;
         Console.WriteLine($"   • Total FashionClipService Constructor: {clipServiceSw.Elapsed.TotalMilliseconds,8:F1} ms");

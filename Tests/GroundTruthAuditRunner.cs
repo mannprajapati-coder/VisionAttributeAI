@@ -84,12 +84,15 @@ public static class GroundTruthAuditRunner
             using var labImg = new Mat();
             Cv2.CvtColor(garmentRoi, labImg, ColorConversionCodes.BGR2Lab);
 
+            int rows = garmentRoi.Rows;
+            int cols = garmentRoi.Cols;
+
             var lList = new List<float>();
             var aList = new List<float>();
             var bList = new List<float>();
-            for (int y = 0; y < garmentRoi.Rows; y++)
+            for (int y = 0; y < rows; y++)
             {
-                for (int x = 0; x < garmentRoi.Cols; x++)
+                for (int x = 0; x < cols; x++)
                 {
                     var p = labImg.At<Vec3b>(y, x);
                     lList.Add(p.Item0 * 100.0f / 255.0f);

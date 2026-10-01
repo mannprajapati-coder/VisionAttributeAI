@@ -161,7 +161,7 @@ public static class StartupCacheParityTestRunner
 
         var fclipLogger = loggerFactory.CreateLogger<FashionClipService>();
         var clipInitSw = Stopwatch.StartNew();
-        var fclipService = new FashionClipService(personOpt, fclipLogger);
+        var fclipService = new FashionClipService(personOpt, fclipLogger, new ClothingColorService());
         clipInitSw.Stop();
         Console.WriteLine($"   • FashionClipService Construction : {clipInitSw.Elapsed.TotalMilliseconds,8:F1} ms (Vision ONNX + Prompt Cache)");
 

@@ -35,16 +35,18 @@ public class FashionClipService : IFashionClipService
     private readonly Dictionary<string, float[]> _lowerColorEmbeddings = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, float[]> _shoesTypeEmbeddings = new(StringComparer.OrdinalIgnoreCase);
 
-    private readonly IClothingColorService _colorService = new ClothingColorService();
+    private readonly IClothingColorService _colorService;
 
     public bool IsModelLoaded => _visionSession != null;
 
     public FashionClipService(
         IOptions<PersonAnalysisOptions> options,
-        ILogger<FashionClipService> logger)
+        ILogger<FashionClipService> logger,
+        IClothingColorService colorService)
     {
         _options = options.Value;
         _logger = logger;
+        _colorService = colorService;
 
         InitializeVisionSession();
         InitializePromptEmbeddings();

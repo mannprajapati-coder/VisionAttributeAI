@@ -68,8 +68,9 @@ public class ModelWarmupService : IModelWarmupService, IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-    private async Task PerformWarmupAsync(CancellationToken cancellationToken)
+    private Task PerformWarmupAsync(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         Status = ModelWarmupStatus.Initializing;
         var sw = Stopwatch.StartNew();
         _logger.LogInformation("[PreWarm] Beginning eager application AI pipeline pre-warming...");
@@ -132,5 +133,7 @@ public class ModelWarmupService : IModelWarmupService, IHostedService
             _readyTcs.TrySetException(ex);
             _logger.LogError(ex, "[PreWarm] AI pipeline pre-warming encountered an error: {Message}", ex.Message);
         }
+
+        return Task.CompletedTask;
     }
 }

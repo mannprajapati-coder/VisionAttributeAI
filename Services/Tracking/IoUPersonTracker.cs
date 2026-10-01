@@ -20,7 +20,6 @@ public class IoUPersonTracker : IPersonTracker
     private readonly Dictionary<int, TrackedPersonState> _activeTracks = new();
     private readonly Dictionary<int, TrackedPersonState> _finalizedTracks = new();
     private int _nextInternalTrackId = 1;
-    private int _nextPublicPersonId = 1;
 
     public IoUPersonTracker(
         IOptions<LiveTrackingOptions> options,
@@ -533,7 +532,6 @@ public class IoUPersonTracker : IPersonTracker
 
         if (usedIds.Count == 0)
         {
-            _nextPublicPersonId = 1;
             return 1;
         }
 
@@ -552,7 +550,6 @@ public class IoUPersonTracker : IPersonTracker
             _activeTracks.Clear();
             _finalizedTracks.Clear();
             _nextInternalTrackId = 1;
-            _nextPublicPersonId = 1;
             _logger.LogInformation("Reset Person Tracker state, active tracks, and finalized histories.");
         }
     }

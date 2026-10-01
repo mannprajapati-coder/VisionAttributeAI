@@ -4,16 +4,16 @@ let currentSelectedFile = null;
 let currentSelectedVideoFile = null;
 let currentParSelectedFile = null;
 
-// Palette for multiple persons
+// Palette for multiple persons (Blue, Violet, Mint, Amber, Coral, Cyan, Pink, Lavender)
 const PERSON_COLORS = [
-    '#10b981', // Green
-    '#3b82f6', // Blue
-    '#f59e0b', // Amber
-    '#a855f7', // Purple
-    '#ec4899', // Pink
-    '#06b6d4', // Cyan
-    '#e11d48', // Red
-    '#84cc16'  // Lime
+    '#4F8CFF', // Blue (Person 01)
+    '#8B5CF6', // Violet (Person 02)
+    '#22C7A5', // Mint (Person 03)
+    '#F5B942', // Amber (Person 04)
+    '#FF5C6C', // Coral/Red (Person 05)
+    '#06B6D4', // Cyan (Person 06)
+    '#EC4899', // Pink (Person 07)
+    '#A78BFA'  // Lavender (Person 08)
 ];
 
 function getPersonColor(personId) {
@@ -21,11 +21,34 @@ function getPersonColor(personId) {
     return PERSON_COLORS[idx];
 }
 
+const COLOR_HEX_MAP = {
+    'black': '#18181b',
+    'white': '#f8fafc',
+    'grey': '#94a3b8',
+    'gray': '#94a3b8',
+    'red': '#ef4444',
+    'blue': '#3b82f6',
+    'green': '#22c55e',
+    'yellow': '#eab308',
+    'orange': '#f97316',
+    'purple': '#a855f7',
+    'brown': '#78350f',
+    'pink': '#ec4899',
+    'beige': '#d4d4d8',
+    'navy': '#1e3a8a',
+    'khaki': '#a3a375'
+};
+
+function getColorHex(colorName) {
+    if (!colorName) return '#94a3b8';
+    return COLOR_HEX_MAP[colorName.toLowerCase().trim()] || '#94a3b8';
+}
+
 function formatClothing(color, type) {
     if (!type || type === 'Not Visible' || type === 'Insufficient Evidence') return type || 'Unknown';
     if (!color || color === 'Unknown' || color === 'Not Visible' || color === 'Insufficient Evidence') return type;
-    if (type.toLowerCase().includes(color.toLowerCase())) return type;
-    return `${color} ${type}`;
+    const hex = getColorHex(color);
+    return `<span class="color-swatch-pill"><span class="color-swatch-dot" style="background-color: ${hex};"></span>${color}</span> <span>${type}</span>`;
 }
 
 function formatStatusText(val) {
@@ -77,6 +100,17 @@ function formatBrandDisplay(p) {
     return 'BrandUnknown';
 }
 
+function formatStateBadge(state, isFullyStable) {
+    if (isFullyStable) return '<span class="state-badge state-stable">Stable</span>';
+    if (!state) return '<span class="state-badge state-analyzing">Analyzing</span>';
+    const s = state.toString().toLowerCase().replace(/_/g, '');
+    if (s.includes('stable')) return '<span class="state-badge state-stable">Stable</span>';
+    if (s.includes('insufficient')) return '<span class="state-badge state-insufficient">Insufficient Evidence</span>';
+    if (s.includes('notvisible')) return '<span class="state-badge state-notvisible">Not Visible</span>';
+    if (s.includes('analyzing') || s.includes('learning')) return '<span class="state-badge state-analyzing">Analyzing</span>';
+    return `<span class="state-badge state-analyzing">${state}</span>`;
+}
+
 function renderRegionalBrandPanel(p) {
     if (!p) return '';
     const b = p.brands || {};
@@ -122,7 +156,10 @@ function renderRegionalBrandPanel(p) {
     return `
         <div class="v-brand-panel">
             <div class="v-brand-panel-header">
-                <span class="v-brand-panel-title">Brand Intelligence</span>
+                <span class="v-brand-panel-title">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--accent-violet);"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    Brand Intelligence
+                </span>
                 ${detected.length > 0 ? `<span class="state-badge state-stable">${detected.length} Detected</span>` : '<span class="state-badge state-insufficient">None</span>'}
             </div>
             ${contentHtml}
@@ -1011,9 +1048,9 @@ function renderLiveOverlay(persons, canvasWidth, canvasHeight) {
             const gH = gFontSize + 8;
             const gW = gMetrics.width + 12;
             const gY = box.y + box.height + 4;
-            ctx.fillStyle = 'rgba(230, 126, 34, 0.95)';
+            ctx.fillStyle = 'rgba(245, 185, 66, 0.95)';
             ctx.fillRect(box.x, gY, gW, gH);
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = '#070B14';
             ctx.fillText(gestureText, box.x + 6, gY + gFontSize + 1);
         }
 
@@ -1030,7 +1067,7 @@ function renderLiveOverlay(persons, canvasWidth, canvasHeight) {
                     if (k.index === 9 || k.index === 10) {
                         const isL = k.index === 9;
                         const labelText = isL ? 'LW' : 'RW';
-                        ctx.fillStyle = isL ? '#3498db' : '#e74c3c';
+                        ctx.fillStyle = isL ? '#4F8CFF' : '#FF5C6C';
                         ctx.beginPath();
                         ctx.arc(k.x, k.y, 6, 0, 2 * Math.PI);
                         ctx.fill();
@@ -1106,9 +1143,7 @@ function renderLivePersonsCards(persons) {
     const color = getPersonColor(selectedDispId);
     const pIdFormatted = String(selectedDispId).padStart(2, '0');
 
-    const stabilityTag = selectedPerson.isFullyStable
-        ? '<span class="state-badge state-stable">Stable</span>'
-        : `<span class="state-badge state-${(selectedPerson.appearanceState || 'analyzing').toLowerCase()}">${selectedPerson.appearanceState || 'Analyzing'}</span>`;
+    const stabilityTag = formatStateBadge(selectedPerson.appearanceState, selectedPerson.isFullyStable);
 
     const switchWarning = (selectedPerson.trackingDiagnostics && selectedPerson.trackingDiagnostics.possibleIdSwitch)
         ? '<span class="state-badge state-notvisible">ID Switch Warning</span>'
@@ -1120,9 +1155,9 @@ function renderLivePersonsCards(persons) {
                 <div class="person-tag-wrap">
                     <span class="person-color-dot" style="background-color: ${color};"></span>
                     <span class="person-id-label" style="color: ${color};">PERSON ${pIdFormatted}</span>
-                    <span class="detection-conf-badge" style="font-size: 0.72rem; padding: 0.1rem 0.4rem;">${(selectedPerson.detectionConfidence * 100).toFixed(0)}% Conf</span>
+                    <span class="detection-conf-badge">${(selectedPerson.detectionConfidence * 100).toFixed(0)}% Conf</span>
                 </div>
-                <div style="display: flex; gap: 0.35rem; align-items: center;">${switchWarning} ${stabilityTag}</div>
+                <div class="person-status-wrap">${switchWarning} ${stabilityTag}</div>
             </div>
 
             <div class="person-card-body">
@@ -1149,8 +1184,8 @@ function renderLivePersonsCards(persons) {
                 <div class="person-attr-line">
                     <span class="attr-title">Gestures / Hands:</span>
                     <strong class="attr-val">
-                        ${selectedPerson.visibility?.leftHandRaised ? '<span style="background:#e67e22; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.75rem; margin-right:4px;">Left Hand Raised</span>' : ''}
-                        ${selectedPerson.visibility?.rightHandRaised ? '<span style="background:#e67e22; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.75rem;">Right Hand Raised</span>' : ''}
+                        ${selectedPerson.visibility?.leftHandRaised ? '<span style="background:var(--accent-amber); color:#070B14; font-weight:700; padding:2px 6px; border-radius:4px; font-size:0.75rem; margin-right:4px;">Left Hand Raised</span>' : ''}
+                        ${selectedPerson.visibility?.rightHandRaised ? '<span style="background:var(--accent-amber); color:#070B14; font-weight:700; padding:2px 6px; border-radius:4px; font-size:0.75rem;">Right Hand Raised</span>' : ''}
                         ${(!selectedPerson.visibility?.leftHandRaised && !selectedPerson.visibility?.rightHandRaised) ? '<span style="color:var(--text-muted); font-size:0.8rem;">Hands Down</span>' : ''}
                     </strong>
                 </div>

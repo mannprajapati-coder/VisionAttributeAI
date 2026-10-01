@@ -85,7 +85,6 @@ public static class ColorArchitectureAuditRunner
 
         // Scan L* in [0..100], Chroma in [0..80], Hue in [0..360)
         int totalGridPoints = 0;
-        int unmappedPoints = 0;
         var classifiedCounts = new Dictionary<string, int>();
 
         var gapReports = new List<string>();
