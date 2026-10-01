@@ -51,14 +51,21 @@ function formatClothing(color, type) {
     return `<span class="color-swatch-pill"><span class="color-swatch-dot" style="background-color: ${hex};"></span>${color}</span> <span>${type}</span>`;
 }
 
+function formatClothingText(color, type) {
+    if (!type || type === 'Not Visible' || type === 'Insufficient Evidence') return type || 'Unknown';
+    if (!color || color === 'Unknown' || color === 'Not Visible' || color === 'Insufficient Evidence') return type;
+    return `${color} ${type}`;
+}
+
 function formatStatusText(val) {
-    if (!val) return 'Unknown';
-    if (val === 'InsufficientVisualEvidence' || val === 'Insufficient Evidence') return 'Insufficient Evidence';
-    if (val === 'NotVisible' || val === 'Not Visible') return 'Not Visible';
-    if (val === 'ModelUnavailable') return 'Model Unavailable';
-    if (val === 'WatchDetected') return 'Watch Detected';
-    if (val === 'NoWatchDetected') return 'No Watch';
-    return val;
+    if (!val) return 'Not Detected';
+    const v = val.toString().trim();
+    if (v === 'Detected' || v === 'WatchDetected' || v === 'Watch Detected') return 'Detected';
+    if (v === 'NotDetected' || v === 'Not Detected' || v === 'NoWatchDetected' || v === 'No Watch' || v === 'No Watch Detected' || v === 'Unknown') return 'Not Detected';
+    if (v === 'InsufficientVisualEvidence' || v === 'Insufficient Evidence') return 'Insufficient Evidence';
+    if (v === 'NotVisible' || v === 'Not Visible') return 'Not Visible';
+    if (v === 'ModelUnavailable' || v === 'Model Unavailable') return 'Model Unavailable';
+    return v;
 }
 
 function formatBrandBadge(state) {
@@ -70,31 +77,47 @@ function formatBrandBadge(state) {
     return `<span class="state-badge state-${s}">${state}</span>`;
 }
 
+function isNegativeBrand(name) {
+    if (!name) return true;
+    const n = name.toString().trim().toLowerCase();
+    return n === 'not visible' ||
+           n === 'not detected' ||
+           n === 'no logo candidate' ||
+           n === 'model unavailable' ||
+           n === 'modelunavailable' ||
+           n === 'unsupported region' ||
+           n === 'insufficient visual evidence' ||
+           n === 'insufficient evidence' ||
+           n === 'brandunknown' ||
+           n === 'unknown' ||
+           n === 'none';
+}
+
 function formatBrandDisplay(p) {
     if (!p) return 'BrandUnknown';
     if (p.brands && p.brands.hasAnyAcceptedBrand) {
         const parts = [];
-        if (p.brands.upperBrand && p.brands.upperBrand.brandName && p.brands.upperBrand.brandName !== 'Not Visible' && p.brands.upperBrand.brandName !== 'BrandUnknown') {
+        if (p.brands.upperBrand && !isNegativeBrand(p.brands.upperBrand.brandName)) {
             parts.push(`Upper: ${p.brands.upperBrand.brandName} (${(p.brands.upperBrand.similarity * 100).toFixed(0)}%)`);
         }
-        if (p.brands.lowerBrand && p.brands.lowerBrand.brandName && p.brands.lowerBrand.brandName !== 'Not Visible' && p.brands.lowerBrand.brandName !== 'BrandUnknown') {
+        if (p.brands.lowerBrand && !isNegativeBrand(p.brands.lowerBrand.brandName)) {
             parts.push(`Lower: ${p.brands.lowerBrand.brandName} (${(p.brands.lowerBrand.similarity * 100).toFixed(0)}%)`);
         }
-        if (p.brands.watchBrand && p.brands.watchBrand.brandName && p.brands.watchBrand.brandName !== 'Not Visible' && p.brands.watchBrand.brandName !== 'BrandUnknown') {
+        if (p.brands.watchBrand && !isNegativeBrand(p.brands.watchBrand.brandName)) {
             parts.push(`Watch: ${p.brands.watchBrand.brandName} (${(p.brands.watchBrand.similarity * 100).toFixed(0)}%)`);
         }
-        if (p.brands.shoeBrand && p.brands.shoeBrand.brandName && p.brands.shoeBrand.brandName !== 'Not Visible' && p.brands.shoeBrand.brandName !== 'BrandUnknown') {
+        if (p.brands.shoeBrand && !isNegativeBrand(p.brands.shoeBrand.brandName)) {
             parts.push(`Shoes: ${p.brands.shoeBrand.brandName} (${(p.brands.shoeBrand.similarity * 100).toFixed(0)}%)`);
         }
-        if (p.brands.bagBrand && p.brands.bagBrand.brandName && p.brands.bagBrand.brandName !== 'Not Visible' && p.brands.bagBrand.brandName !== 'BrandUnknown') {
+        if (p.brands.bagBrand && !isNegativeBrand(p.brands.bagBrand.brandName)) {
             parts.push(`Bag: ${p.brands.bagBrand.brandName} (${(p.brands.bagBrand.similarity * 100).toFixed(0)}%)`);
         }
         if (parts.length > 0) return parts.join(' • ');
-        if (p.brands.topDetectedBrand && p.brands.topDetectedBrand !== 'BrandUnknown') {
+        if (p.brands.topDetectedBrand && !isNegativeBrand(p.brands.topDetectedBrand)) {
             return `${p.brands.topDetectedBrand} (${(p.brands.topBrandSimilarity * 100).toFixed(0)}%)`;
         }
     }
-    if (p.brandName && p.brandName !== 'BrandUnknown' && p.brandName !== 'Unknown' && p.brandName !== 'Not Visible') {
+    if (p.brandName && !isNegativeBrand(p.brandName)) {
         return `${p.brandName} ${p.brandConfidence > 0 ? `(${(p.brandConfidence * 100).toFixed(0)}%)` : ''}`;
     }
     return 'BrandUnknown';
@@ -119,7 +142,7 @@ function renderRegionalBrandPanel(p) {
     const checkAndAdd = (region, brandObj) => {
         if (!brandObj) return;
         const name = brandObj.brandName;
-        if (name && name !== 'Not Visible' && name !== 'BrandUnknown' && name !== 'Unknown') {
+        if (name && !isNegativeBrand(name)) {
             const sim = brandObj.similarity ? `${(brandObj.similarity * 100).toFixed(0)}%` : '';
             detected.push({ region, name, sim });
         }
@@ -131,7 +154,7 @@ function renderRegionalBrandPanel(p) {
     checkAndAdd('Shoes', b.shoeBrand);
     checkAndAdd('Bag', b.bagBrand);
 
-    if (detected.length === 0 && p.brandName && p.brandName !== 'BrandUnknown' && p.brandName !== 'Unknown' && p.brandName !== 'Not Visible') {
+    if (detected.length === 0 && p.brandName && !isNegativeBrand(p.brandName)) {
         const sim = p.brandConfidence > 0 ? `${(p.brandConfidence * 100).toFixed(0)}%` : '';
         detected.push({ region: 'Garment', name: p.brandName, sim });
     }
@@ -468,7 +491,7 @@ function renderImageDetections(persons, origWidth, origHeight) {
             
             <div class="v-person-body">
                 ${p.cropDataUrl ? `
-                <div class="v-person-crop" title="Click to enlarge person crop" onclick="openImageModal('${p.cropDataUrl}', 'Person #${p.personId} Crop', '${p.appearanceSex} • ${formatClothing(p.upperColor, p.upperType)} • ${formatClothing(p.lowerColor, p.lowerType)}')">
+                <div class="v-person-crop" title="Click to enlarge person crop" onclick="openImageModal('${p.cropDataUrl}', 'Person #${p.personId} Crop', '${p.appearanceSex} • ${formatClothingText(p.upperColor, p.upperType)} • ${formatClothingText(p.lowerColor, p.lowerType)}')">
                     <img src="${p.cropDataUrl}" alt="Person #${p.personId} Crop">
                     <div class="crop-zoom-hint">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -838,6 +861,14 @@ async function populateCameraDevices() {
     } catch (e) {
         console.warn('Unable to enumerate camera devices:', e);
     }
+}
+
+async function onCameraDeviceChanged() {
+    if (!isCameraRunning) return;
+
+    // Stop the active stream before opening the newly selected device.
+    stopCamera();
+    await startCamera();
 }
 
 async function startCamera() {

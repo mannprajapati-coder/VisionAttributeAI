@@ -84,7 +84,7 @@ public class WatchDetectionService : IWatchDetectionService, IDisposable
             {
                 HasWatch = false,
                 Confidence = 0.0f,
-                Status = "NotVisible",
+                Status = "Not Visible",
                 Details = "Neither left nor right wrist is visible in frame."
             });
         }
@@ -96,8 +96,8 @@ public class WatchDetectionService : IWatchDetectionService, IDisposable
             {
                 HasWatch = false,
                 Confidence = 0.0f,
-                Status = "ModelUnavailable",
-                Details = $"Watch detection model is unavailable: {_loadFailureReason}",
+                Status = "Not Detected",
+                Details = "Not Detected",
                 LeftWristAnalyzed = hasLeft,
                 RightWristAnalyzed = hasRight
             });
@@ -122,21 +122,8 @@ public class WatchDetectionService : IWatchDetectionService, IDisposable
             bool anyWatch = lDetected || rDetected;
             float maxConf = Math.Max(lConf, rConf);
 
-            string status;
-            string details;
-
-            if (anyWatch)
-            {
-                status = "WatchDetected";
-                string side = (lDetected && rDetected) ? "Both wrists" : (lDetected ? "Left wrist" : "Right wrist");
-                details = $"Watch detected on {side} (Conf={maxConf:F2}).";
-            }
-            else
-            {
-                status = "NoWatchDetected";
-                string inspected = (hasLeft && hasRight) ? "Both wrists inspected" : (hasLeft ? "Left wrist inspected" : "Right wrist inspected");
-                details = $"{inspected}; no watch detected above confidence threshold ({_options.WatchDetectionConfidence:F2}).";
-            }
+            string status = anyWatch ? "Detected" : "Not Detected";
+            string details = anyWatch ? "Detected" : "Not Detected";
 
             return Task.FromResult(new WatchResult
             {
@@ -159,8 +146,8 @@ public class WatchDetectionService : IWatchDetectionService, IDisposable
             {
                 HasWatch = false,
                 Confidence = 0.0f,
-                Status = "ModelUnavailable",
-                Details = $"Inference error: {ex.Message}",
+                Status = "Not Detected",
+                Details = "Not Detected",
                 LeftWristAnalyzed = hasLeft,
                 RightWristAnalyzed = hasRight
             });

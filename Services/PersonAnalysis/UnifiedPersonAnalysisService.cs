@@ -216,11 +216,13 @@ public class UnifiedPersonAnalysisService : IUnifiedPersonAnalysisService
             ShoesMargin = shoesResult?.Margin ?? 0f,
             ShoesScores = shoesResult?.CategoryScores ?? new Dictionary<string, float>(),
 
-            // Watch (Pose Wrist ROIs -> Wrist Quality Gate -> YOLO-Nano Watch Detector)
+            // Watch (Pose Wrist ROIs -> Wrist Quality Gate -> Watch Detector)
             HasWatchObservation = watchResult != null,
-            WatchStatus = watchResult != null ? watchResult.Status : (!pose.Visibility.LeftWristVisible && !pose.Visibility.RightWristVisible ? "Not Visible" : "Insufficient Evidence"),
+            WatchStatus = watchResult != null 
+                ? (watchResult.Status == "WatchDetected" || watchResult.Status == "Detected" ? "Detected" : (watchResult.Status == "NoWatchDetected" || watchResult.Status == "Not Detected" || watchResult.Status == "ModelUnavailable" ? "Not Detected" : watchResult.Status))
+                : (!pose.Visibility.LeftWristVisible && !pose.Visibility.RightWristVisible ? "Not Visible" : "Insufficient Evidence"),
             WatchConfidence = watchResult?.Confidence ?? 0f,
-            WatchDetails = watchResult?.Details ?? (!pose.Visibility.LeftWristVisible && !pose.Visibility.RightWristVisible ? "Wrists not visible in frame." : "Wrist resolution/sharpness below detection gate."),
+            WatchDetails = watchResult?.Status == "Detected" || watchResult?.Status == "WatchDetected" ? "Detected" : "Not Detected",
             LeftWristDetected = watchResult?.LeftWristDetected ?? false,
             RightWristDetected = watchResult?.RightWristDetected ?? false,
 

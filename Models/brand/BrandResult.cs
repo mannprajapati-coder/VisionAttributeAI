@@ -21,6 +21,13 @@ public class BrandResult
         Region = region
     };
 
+    public static BrandResult NotDetected(string region) => new()
+    {
+        BrandName = "Not Detected",
+        State = BrandState.NoLogoCandidate,
+        Region = region
+    };
+
     public static BrandResult InsufficientVisualEvidence(string region) => new()
     {
         BrandName = "Insufficient Visual Evidence",

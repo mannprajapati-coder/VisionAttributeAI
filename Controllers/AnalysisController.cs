@@ -270,8 +270,10 @@ public class AnalysisController : ControllerBase
                 string shoes = attrs.GetValueOrDefault("Shoes")?.Value ?? "Not Visible";
                 float shoesConf = attrs.GetValueOrDefault("Shoes")?.Confidence ?? 0f;
 
-                string watch = attrs.GetValueOrDefault("Watch")?.Value ?? "Unknown";
+                string rawWatch = attrs.GetValueOrDefault("Watch")?.Value ?? "Not Detected";
                 float watchConf = attrs.GetValueOrDefault("Watch")?.Confidence ?? 0f;
+                string watch = NormalizeWatchStatus(rawWatch);
+                bool isWatchDetected = watch.Equals("Detected", StringComparison.OrdinalIgnoreCase);
 
                 string brand = attrs.GetValueOrDefault("Brand")?.Value ?? "BrandUnknown";
                 float brandConf = attrs.GetValueOrDefault("Brand")?.Confidence ?? 0f;
@@ -282,8 +284,14 @@ public class AnalysisController : ControllerBase
                 string lowBrand = attrs.GetValueOrDefault("LowerBrand")?.Value ?? "Not Visible";
                 float lowBrandConf = attrs.GetValueOrDefault("LowerBrand")?.Confidence ?? 0f;
 
-                string watchBrand = attrs.GetValueOrDefault("WatchBrand")?.Value ?? "Not Visible";
-                float watchBrandConf = attrs.GetValueOrDefault("WatchBrand")?.Confidence ?? 0f;
+                string watchBrand = isWatchDetected 
+                    ? (attrs.GetValueOrDefault("WatchBrand")?.Value ?? "Not Detected")
+                    : "Not Detected";
+                if (watchBrand == "Model Unavailable" || watchBrand == "ModelUnavailable" || watchBrand == "Not Visible" || watchBrand == "Unknown" || watchBrand == "Unsupported Region")
+                {
+                    watchBrand = "Not Detected";
+                }
+                float watchBrandConf = isWatchDetected ? (attrs.GetValueOrDefault("WatchBrand")?.Confidence ?? 0f) : 0f;
 
                 string shoeBrand = attrs.GetValueOrDefault("ShoeBrand")?.Value ?? "Not Visible";
                 float shoeBrandConf = attrs.GetValueOrDefault("ShoeBrand")?.Confidence ?? 0f;
@@ -300,7 +308,7 @@ public class AnalysisController : ControllerBase
                     BagBrand = new BrandDto { Region = "Bag", BrandName = bagBrand, Similarity = bagBrandConf, State = DetermineBrandState(bagBrand) },
                     TopDetectedBrand = brand,
                     TopBrandSimilarity = brandConf,
-                    HasAnyAcceptedBrand = brand != "BrandUnknown" && brand != "Unknown" && brand != "Not Visible" && !brand.StartsWith("No Logo") && !brand.StartsWith("Insufficient")
+                    HasAnyAcceptedBrand = brand != "BrandUnknown" && brand != "Unknown" && brand != "Not Visible" && !brand.StartsWith("No Logo") && !brand.StartsWith("Insufficient") && !brand.StartsWith("Not Detected")
                 };
 
                 return new DetectedPersonDto
@@ -334,7 +342,7 @@ public class AnalysisController : ControllerBase
                     ShoesType = shoes,
                     ShoesConfidence = shoesConf,
 
-                    WatchDetected = watch.Equals("Detected", StringComparison.OrdinalIgnoreCase),
+                    WatchDetected = isWatchDetected,
                     WatchConfidence = watchConf,
                     WatchDetails = watch,
 
@@ -355,6 +363,7 @@ public class AnalysisController : ControllerBase
     private static string DetermineBrandState(string brandName) => brandName switch
     {
         "Not Visible" => "NotVisible",
+        "Not Detected" => "NoLogoCandidate",
         "Insufficient Visual Evidence" => "InsufficientVisualEvidence",
         "No Logo Candidate" => "NoLogoCandidate",
         "Model Unavailable" => "ModelUnavailable",
@@ -362,6 +371,43 @@ public class AnalysisController : ControllerBase
         "BrandUnknown" or "Unknown" => "BrandUnknown",
         _ => "BrandCandidate"
     };
+
+    private static string NormalizeWatchStatus(string? val)
+    {
+        if (string.IsNullOrWhiteSpace(val)) return "Not Detected";
+        string v = val.Trim();
+        if (v.Equals("Detected", StringComparison.OrdinalIgnoreCase) ||
+            v.Equals("WatchDetected", StringComparison.OrdinalIgnoreCase) ||
+            v.Equals("Watch Detected", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Detected";
+        }
+        if (v.Equals("InsufficientVisualEvidence", StringComparison.OrdinalIgnoreCase) ||
+            v.Equals("Insufficient Evidence", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Insufficient Evidence";
+        }
+        if (v.Equals("NotVisible", StringComparison.OrdinalIgnoreCase) ||
+            v.Equals("Not Visible", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Not Visible";
+        }
+        if (v.Equals("ModelUnavailable", StringComparison.OrdinalIgnoreCase) ||
+            v.Equals("Model Unavailable", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Not Detected";
+        }
+        if (v.Equals("NoWatchDetected", StringComparison.OrdinalIgnoreCase) ||
+            v.Equals("No Watch", StringComparison.OrdinalIgnoreCase) ||
+            v.Equals("No Watch Detected", StringComparison.OrdinalIgnoreCase) ||
+            v.Equals("NotDetected", StringComparison.OrdinalIgnoreCase) ||
+            v.Equals("Not Detected", StringComparison.OrdinalIgnoreCase) ||
+            v.Equals("Unknown", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Not Detected";
+        }
+        return v;
+    }
 
     /// <summary>
     /// Runs the comprehensive empirical pipeline validation test suite on real images and video.

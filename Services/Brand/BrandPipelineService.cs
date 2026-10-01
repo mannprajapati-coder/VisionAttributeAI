@@ -104,8 +104,8 @@ public class BrandPipelineService : IBrandPipelineService
             brandState.SetResultForRegion("Shoes", BrandResult.NotVisible("Shoes"));
         }
 
-        // D. Watch / Wrist (Watch model is unavailable system-wide)
-        brandState.SetResultForRegion("Watch", BrandResult.ModelUnavailable("Watch"));
+        // D. Watch / Wrist (Watch is not detected)
+        brandState.SetResultForRegion("Watch", BrandResult.NotDetected("Watch"));
 
         // E. Bag / Backpack
         if (pose.Regions.BagRegion != null)
